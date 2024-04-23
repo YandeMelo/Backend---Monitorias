@@ -74,6 +74,11 @@ public class User implements UserDetails{
                 this.password = encryptedPassword;
     }
 
+    public boolean hasRole(String role) {
+        Collection<? extends GrantedAuthority> authorities = this.getAuthorities();
+        return authorities.contains(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.tipoUsuario == UserRole.ADMIN) {
