@@ -3,8 +3,12 @@ package com.yandemelo.monitorias.entities;
 import java.time.LocalDate;
 
 import com.yandemelo.monitorias.entities.authEntities.User;
+import com.yandemelo.monitorias.entities.enums.CursosExistentes;
+import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,13 +39,17 @@ public class Monitoria {
     private User professorId;
 
     @OneToOne
-    @JoinColumn(name = "monitor_id", nullable = false)
+    @JoinColumn(name = "monitor_id", nullable = true)
     private User monitorId;
 
     private String disciplina;
-    private String curso;
+
+    @Enumerated(EnumType.STRING)
+    private CursosExistentes curso;
     private String semestre;
-    private String status;
+    
+    @Enumerated(EnumType.STRING)
+    private StatusMonitoria status;
     private LocalDate dataCadastro;
     private LocalDate ultimaAtualizacao;
 }

@@ -3,8 +3,11 @@ package com.yandemelo.monitorias.entities;
 import java.time.LocalDate;
 
 import com.yandemelo.monitorias.entities.authEntities.User;
+import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,7 +49,8 @@ public class CandidatoMonitoria {
     private LocalDate dataSolicitacao;
 
     @NotNull
-    private String statusCandidatura;
+    @Enumerated(EnumType.STRING)
+    private StatusCandidatura statusCandidatura;
 
     private LocalDate dataCadastro;
     private LocalDate ultimaAtualizacao;
