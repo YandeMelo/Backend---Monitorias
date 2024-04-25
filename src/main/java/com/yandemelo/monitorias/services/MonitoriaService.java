@@ -18,6 +18,8 @@ import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
+import com.yandemelo.monitorias.exceptions.AlunoCandidatado;
+import com.yandemelo.monitorias.exceptions.InvalidFileException;
 import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
 import com.yandemelo.monitorias.repositories.ArquivoRepository;
 import com.yandemelo.monitorias.repositories.CandidatoMonitoriaRepository;
@@ -63,6 +65,10 @@ public class MonitoriaService {
         Monitoria monitoria = monitoriaRepository.getReferenceById(monitoriaId);
         Arquivo arquivoParaSalvar = arquivoRepository.getArquivoPorIdAluno(user.getId());
 
+        if (!historicoEscolar.getContentType().equals("application/pdf")) {
+            throw new InvalidFileException("Tipo de arquivo inválido, apenas PDF's.");
+        } 
+
         if (arquivoParaSalvar != null) {
             arquivoParaSalvar.setId(arquivoParaSalvar.getId());
             salvarArquivo(arquivoParaSalvar, historicoEscolar, user);
@@ -71,11 +77,16 @@ public class MonitoriaService {
             arquivoParaSalvar = new Arquivo();
             salvarArquivo(arquivoParaSalvar, historicoEscolar, user);
             arquivoRepository.save(arquivoParaSalvar);
-
-            CandidatoMonitoria candidato = new CandidatoMonitoria();
-            salvarCandidato(candidato, user, monitoria, arquivoParaSalvar);
-            candidatoMonitoriaRepository.save(candidato);
         }
+            CandidatoMonitoria candidato = candidatoMonitoriaRepository.verInscricao(user);
+            if (candidato == null) {
+                candidato = new CandidatoMonitoria();
+                salvarCandidato(candidato, user, monitoria, arquivoParaSalvar);
+                candidatoMonitoriaRepository.save(candidato);
+            } else {
+                throw new AlunoCandidatado("Aluno já inscrito em outra monitoria.");
+            }
+
             return new CandidatoMonitoriaDTO(user, monitoria, arquivoParaSalvar.getId());
     }
 

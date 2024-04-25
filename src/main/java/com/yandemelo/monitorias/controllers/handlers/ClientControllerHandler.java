@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.yandemelo.monitorias.dto.errors.CustomError;
 import com.yandemelo.monitorias.dto.errors.ValidationError;
+import com.yandemelo.monitorias.exceptions.AlunoCandidatado;
+import com.yandemelo.monitorias.exceptions.InvalidFileException;
 import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +34,20 @@ public class ClientControllerHandler {
         for (FieldError f: e.getBindingResult().getFieldErrors()){
             err.addError(f.getField(), f.getDefaultMessage());
         }
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<CustomError> invalidFileException(InvalidFileException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(AlunoCandidatado.class)
+    public ResponseEntity<CustomError> alunoCandidatado(AlunoCandidatado e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 }

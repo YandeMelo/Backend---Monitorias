@@ -91,7 +91,7 @@ public class User implements UserDetails{
         if (this.tipoUsuario == UserRole.ADMIN) {
             return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_PROFESSOR"), new SimpleGrantedAuthority("ROLE_ALUNO"));
         }else if (this.tipoUsuario == UserRole.PROFESSOR){
-            return List.of(new SimpleGrantedAuthority("ROLES_PROFESSOR"));
+            return List.of(new SimpleGrantedAuthority("ROLE_PROFESSOR"));
         } else {
             return List.of(new SimpleGrantedAuthority("ROLE_ALUNO"));
         }
