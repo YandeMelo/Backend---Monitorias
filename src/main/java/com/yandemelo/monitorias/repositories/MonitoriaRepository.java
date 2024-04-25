@@ -5,21 +5,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.yandemelo.monitorias.entities.Monitoria;
-import com.yandemelo.monitorias.projections.MonitoriaProjection;
+import com.yandemelo.monitorias.entities.enums.CursosExistentes;
 
 public interface MonitoriaRepository extends JpaRepository<Monitoria, Long>{
     
 
-    @Query(value = "SELECT * FROM monitoria m " +
-                   "WHERE m.professor_id = :professorId " +
-                   "AND m.disciplina = :disciplina " +
-                   "AND m.semestre = :semestre " +
-                   "AND m.curso = :curso",
-           nativeQuery = true)
-    MonitoriaProjection verificarMonitoriaExistente(@Param("professorId") Long professorId, 
+    @Query("SELECT m FROM Monitoria m " +
+           "JOIN m.professorId p " +
+           "WHERE p.id = :professorId " +
+           "AND m.disciplina = :disciplina " +
+           "AND m.semestre = :semestre " +
+           "AND m.curso = :curso")
+    Monitoria verificarMonitoriaExistente(@Param("professorId") Long professorId, 
                                                      @Param("disciplina") String disciplina, 
                                                      @Param("semestre") String semestre, 
-                                                     @Param("curso") String curso);
+                                                     @Param("curso") CursosExistentes curso);
+
 
 
 
