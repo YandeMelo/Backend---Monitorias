@@ -1,5 +1,7 @@
 package com.yandemelo.monitorias.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +23,8 @@ public interface MonitoriaRepository extends JpaRepository<Monitoria, Long>{
                                                      @Param("semestre") String semestre, 
                                                      @Param("curso") CursosExistentes curso);
 
+    @Query("SELECT m FROM Monitoria m WHERE m.status = DISPONIVEL")                                                 
+    Page<Monitoria> consultarMonitoriasDisponiveis(Pageable pageable);
 
 
 

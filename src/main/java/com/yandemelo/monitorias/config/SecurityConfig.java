@@ -28,7 +28,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-        .requestMatchers(HttpMethod.POST, "/monitorias").hasRole("PROFESSOR")
+        .requestMatchers(HttpMethod.GET, "/monitorias/disponiveis").hasRole("ALUNO")
+        .requestMatchers(HttpMethod.POST, "/monitorias/abrir").hasRole("PROFESSOR")
         .anyRequest().authenticated())
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
