@@ -1,7 +1,7 @@
 package com.yandemelo.monitorias.entities.enums;
 
 public enum StatusMonitoria {
-    INSCRICAO,
+    DISPONIVEL,
     ANDAMENTO,
     SUSPENSA,
     FINALIZADA
