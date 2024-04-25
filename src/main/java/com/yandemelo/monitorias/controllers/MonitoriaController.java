@@ -8,13 +8,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
+import com.yandemelo.monitorias.dto.CandidatoMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
 import com.yandemelo.monitorias.services.MonitoriaService;
 
@@ -42,6 +45,13 @@ public class MonitoriaController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @PostMapping(value = "/candidatar/{idMonitoria}")
+    public ResponseEntity<CandidatoMonitoriaDTO> candidatarAlunoMonitoria(@PathVariable Long idMonitoria, @Valid @RequestBody MultipartFile historicoEscolar){
+        CandidatoMonitoriaDTO candidatoMonitoria = service.candidatarAluno(idMonitoria, historicoEscolar);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(candidatoMonitoria.getAlunoId(), candidatoMonitoria.getMonitoriaId()).toUri();
+        return ResponseEntity.created(uri).body(candidatoMonitoria);
     }
 
 }

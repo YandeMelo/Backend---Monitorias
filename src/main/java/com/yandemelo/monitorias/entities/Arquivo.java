@@ -26,6 +26,8 @@ public class Arquivo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    private Long idAluno;
 
     @NotNull
     private String nomeArquivo;
@@ -34,5 +36,5 @@ public class Arquivo {
     private byte[] conteudo;
     private LocalDate dataCadastro;
     private LocalDate ultimaAtualizacao;
-
+    
 }
