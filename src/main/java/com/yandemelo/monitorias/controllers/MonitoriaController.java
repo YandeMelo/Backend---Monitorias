@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.dto.CandidatoMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
+import com.yandemelo.monitorias.exceptions.InvalidFileException;
 import com.yandemelo.monitorias.services.MonitoriaService;
 
 import jakarta.validation.Valid;
@@ -49,6 +50,9 @@ public class MonitoriaController {
 
     @PostMapping(value = "/candidatar/{idMonitoria}")
     public ResponseEntity<CandidatoMonitoriaDTO> candidatarAlunoMonitoria(@PathVariable Long idMonitoria, @Valid @RequestBody MultipartFile historicoEscolar){
+        if (historicoEscolar.isEmpty()){
+            throw new InvalidFileException("Histórico Escolar (PDF) necessário para a candidatura.");
+        }
         CandidatoMonitoriaDTO candidatoMonitoria = service.candidatarAluno(idMonitoria, historicoEscolar);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(candidatoMonitoria.getAlunoId(), candidatoMonitoria.getMonitoriaId()).toUri();
         return ResponseEntity.created(uri).body(candidatoMonitoria);
