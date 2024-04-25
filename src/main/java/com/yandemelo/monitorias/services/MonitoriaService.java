@@ -5,12 +5,11 @@ import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.yandemelo.monitorias.dto.MonitoriaDTO;
+import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
 import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
-import com.yandemelo.monitorias.projections.MonitoriaProjection;
 import com.yandemelo.monitorias.repositories.MonitoriaRepository;
 import com.yandemelo.monitorias.services.authServices.AuthorizationService;
 
@@ -25,9 +24,9 @@ public class MonitoriaService {
     private AuthorizationService service;
     
     @Transactional
-    public MonitoriaDTO ofertarMonitoria(MonitoriaDTO dto){
+    public AbrirMonitoriaDTO ofertarMonitoria(AbrirMonitoriaDTO dto){
         User user = service.authenticated();
-        MonitoriaProjection verificarMonitoria = repository.verificarMonitoriaExistente(user.getId(), dto.getDisciplina(), dto.getSemestre(), dto.getCurso().toString());
+        Monitoria verificarMonitoria = repository.verificarMonitoriaExistente(user.getId(), dto.getDisciplina(), dto.getSemestre(), dto.getCurso());
         if (verificarMonitoria != null) {
             throw new MonitoriaExistenteException("Esta monitoria já está em aberto.");
         } else {
@@ -41,7 +40,7 @@ public class MonitoriaService {
             monitoria.setMonitorId(null);
             monitoria.setProfessorId(user);
             repository.save(monitoria);
-            return new MonitoriaDTO(monitoria);
+            return new AbrirMonitoriaDTO(monitoria);
         }
     }
 

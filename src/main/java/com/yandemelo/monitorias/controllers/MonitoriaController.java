@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.yandemelo.monitorias.dto.MonitoriaDTO;
+import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.services.MonitoriaService;
 
 import jakarta.validation.Valid;
@@ -24,8 +24,8 @@ public class MonitoriaController {
     private MonitoriaService service;
 
     @PostMapping
-    public ResponseEntity<MonitoriaDTO> ofertarMonitoria(@Valid @RequestBody MonitoriaDTO dto){
-        MonitoriaDTO monitoriaDTO = service.ofertarMonitoria(dto);
+    public ResponseEntity<AbrirMonitoriaDTO> ofertarMonitoria(@Valid @RequestBody AbrirMonitoriaDTO dto){
+        AbrirMonitoriaDTO monitoriaDTO = service.ofertarMonitoria(dto);
         if (monitoriaDTO != null) {
             URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(monitoriaDTO.getId()).toUri();
             return ResponseEntity.created(uri).body(monitoriaDTO);
