@@ -26,7 +26,8 @@ public interface MonitoriaRepository extends JpaRepository<Monitoria, Long>{
     @Query("SELECT m FROM Monitoria m WHERE m.status = DISPONIVEL")                                                 
     Page<Monitoria> consultarMonitoriasDisponiveis(Pageable pageable);
 
-
+    @Query("SELECT m FROM Monitoria m WHERE m.monitorId.id = :candidato")   
+    Monitoria buscarPorCandidato(Long candidato);
 
 
 }

@@ -8,7 +8,7 @@ import com.yandemelo.monitorias.entities.authEntities.User;
 
 public interface CandidatoMonitoriaRepository extends JpaRepository<CandidatoMonitoria, Long>{
     
-    @Query("SELECT c FROM CandidatoMonitoria c WHERE c.alunoId = :idCandidato")
+    @Query("SELECT c FROM CandidatoMonitoria c WHERE c.alunoId = :idCandidato " )
     CandidatoMonitoria verInscricao (User idCandidato);
 
 }

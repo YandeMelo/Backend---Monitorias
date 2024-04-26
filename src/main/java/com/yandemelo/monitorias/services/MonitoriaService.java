@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
-import com.yandemelo.monitorias.dto.CandidatoMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
+import com.yandemelo.monitorias.dto.candidaturaAluno.BuscarStatusCandidatura;
+import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
+import com.yandemelo.monitorias.dto.candidaturaAluno.StatusMonitoriaDTO;
 import com.yandemelo.monitorias.entities.Arquivo;
 import com.yandemelo.monitorias.entities.CandidatoMonitoria;
 import com.yandemelo.monitorias.entities.Monitoria;
@@ -19,6 +21,7 @@ import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
 import com.yandemelo.monitorias.exceptions.AlunoCandidatado;
+import com.yandemelo.monitorias.exceptions.AlunoNaoCandidatado;
 import com.yandemelo.monitorias.exceptions.InvalidFileException;
 import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
 import com.yandemelo.monitorias.repositories.ArquivoRepository;
@@ -35,7 +38,6 @@ public class MonitoriaService {
     private ArquivoRepository arquivoRepository;
     @Autowired
     private CandidatoMonitoriaRepository candidatoMonitoriaRepository;
-
     @Autowired
     private AuthorizationService userService;
     
@@ -43,6 +45,17 @@ public class MonitoriaService {
     public Page<ConsultarMonitoriasDTO> consultarMonitoriasDisponiveis (Pageable pageable){
         Page<Monitoria> monitorias = monitoriaRepository.consultarMonitoriasDisponiveis(pageable);
         return monitorias.map(x -> new ConsultarMonitoriasDTO(x));
+    }
+
+    @Transactional(readOnly = true)
+    public BuscarStatusCandidatura statusCandidatura (){
+        User user = userService.authenticated();
+        CandidatoMonitoria candidato = candidatoMonitoriaRepository.verInscricao(user);
+        if (candidato == null) {
+            throw new AlunoNaoCandidatado("Você não está candidatado em nenhuma monitoria.");
+        }
+        StatusMonitoriaDTO monitoria = new StatusMonitoriaDTO(candidato.getMonitoriaId());
+        return new BuscarStatusCandidatura(candidato, monitoria);
     }
 
     @Transactional
@@ -60,7 +73,7 @@ public class MonitoriaService {
     }
 
     @Transactional
-    public CandidatoMonitoriaDTO candidatarAluno(Long monitoriaId, MultipartFile historicoEscolar){
+    public CandidatarAlunoDTO candidatarAluno(Long monitoriaId, MultipartFile historicoEscolar){
         User user = userService.authenticated();
         Monitoria monitoria = monitoriaRepository.getReferenceById(monitoriaId);
         Arquivo arquivoParaSalvar = arquivoRepository.getArquivoPorIdAluno(user.getId());
@@ -87,8 +100,10 @@ public class MonitoriaService {
                 throw new AlunoCandidatado("Aluno já inscrito em outra monitoria.");
             }
 
-            return new CandidatoMonitoriaDTO(user, monitoria, arquivoParaSalvar.getId());
+            StatusMonitoriaDTO dto = new StatusMonitoriaDTO(monitoria);
+            return new CandidatarAlunoDTO(user, dto);
     }
+
 
     public void salvarCandidato (CandidatoMonitoria candidato, User user, Monitoria monitoria, Arquivo arquivoParaSalvar){
         try {

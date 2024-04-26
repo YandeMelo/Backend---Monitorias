@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConsultarMonitoriasDTO {
     
-    private Long id;
     private String professorNome;
     private String disciplina;
     private CursosExistentes curso;
@@ -25,7 +24,7 @@ public class ConsultarMonitoriasDTO {
     private LocalDate ultimaAtualizacao;
     
     public ConsultarMonitoriasDTO(Monitoria monitorias) {
-        id = monitorias.getId();
+
         professorNome = monitorias.getProfessorId().getNome();
         disciplina = monitorias.getDisciplina();
         curso = monitorias.getCurso();
