@@ -13,6 +13,7 @@ import com.yandemelo.monitorias.entities.Monitoria;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -63,7 +64,7 @@ public class User implements UserDetails{
     private LocalDate dataCadastro;
     private LocalDate ultimaAtualizacao;
 
-    @OneToMany(mappedBy = "professorId")
+    @OneToMany(mappedBy = "professorId", fetch = FetchType.EAGER)
     private List<Monitoria> monitorias = new ArrayList<>();
     
     public User(String nome, String cpf, String email, String fotoPerfil, Boolean ativo,

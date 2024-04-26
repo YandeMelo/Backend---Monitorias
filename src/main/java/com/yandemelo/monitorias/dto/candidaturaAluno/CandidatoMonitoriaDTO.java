@@ -1,4 +1,4 @@
-package com.yandemelo.monitorias.dto;
+package com.yandemelo.monitorias.dto.candidaturaAluno;
 
 import java.time.LocalDate;
 
@@ -16,14 +16,14 @@ import lombok.NoArgsConstructor;
 public class CandidatoMonitoriaDTO {
 
     private Long alunoId;
-    private Long monitoriaId;
+    private Monitoria monitoriaId;
     private Long pdfHistoricoEscolar;
     private LocalDate dataSolicitacao;
     private StatusCandidatura statusCandidatura;
     
     public CandidatoMonitoriaDTO(User user, Monitoria monitoria, Long historicoEscolarId) {
         alunoId = user.getId();
-        monitoriaId = monitoria.getId();
+        monitoriaId = monitoria;
         pdfHistoricoEscolar = historicoEscolarId;
         dataSolicitacao = LocalDate.now();
         statusCandidatura = StatusCandidatura.AGUARDANDO_APROVACAO;

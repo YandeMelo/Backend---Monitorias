@@ -17,10 +17,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
-import com.yandemelo.monitorias.dto.CandidatoMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
+import com.yandemelo.monitorias.dto.candidaturaAluno.BuscarStatusCandidatura;
+import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
+import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.exceptions.InvalidFileException;
 import com.yandemelo.monitorias.services.MonitoriaService;
+import com.yandemelo.monitorias.services.authServices.AuthorizationService;
 
 import jakarta.validation.Valid;
 
@@ -30,10 +33,18 @@ public class MonitoriaController {
     
     @Autowired
     private MonitoriaService service;
+    @Autowired
+    private AuthorizationService userService;
 
     @GetMapping(value = "/disponiveis")
     public ResponseEntity<Page<ConsultarMonitoriasDTO>> consultarMonitoriasDisponiveis(Pageable pageable){
         Page<ConsultarMonitoriasDTO> dto = service.consultarMonitoriasDisponiveis(pageable);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping(value = "/status")
+    public ResponseEntity<BuscarStatusCandidatura> statusCandidatura(){
+        BuscarStatusCandidatura dto = service.statusCandidatura();
         return ResponseEntity.ok(dto);
     }
 
@@ -49,12 +60,13 @@ public class MonitoriaController {
     }
 
     @PostMapping(value = "/candidatar/{idMonitoria}")
-    public ResponseEntity<CandidatoMonitoriaDTO> candidatarAlunoMonitoria(@PathVariable Long idMonitoria, @Valid @RequestBody MultipartFile historicoEscolar){
+    public ResponseEntity<CandidatarAlunoDTO> candidatarAlunoMonitoria(@PathVariable Long idMonitoria, @Valid @RequestBody MultipartFile historicoEscolar){
         if (historicoEscolar.isEmpty()){
             throw new InvalidFileException("Histórico Escolar (PDF) necessário para a candidatura.");
         }
-        CandidatoMonitoriaDTO candidatoMonitoria = service.candidatarAluno(idMonitoria, historicoEscolar);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(candidatoMonitoria.getAlunoId(), candidatoMonitoria.getMonitoriaId()).toUri();
+        CandidatarAlunoDTO candidatoMonitoria = service.candidatarAluno(idMonitoria, historicoEscolar);
+        User user = userService.authenticated();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
         return ResponseEntity.created(uri).body(candidatoMonitoria);
     }
 
