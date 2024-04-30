@@ -1,6 +1,7 @@
 package com.yandemelo.monitorias.controllers;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
+import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
 import com.yandemelo.monitorias.entities.authEntities.User;
@@ -45,6 +47,12 @@ public class MonitoriaController {
     public ResponseEntity<Page<ConsultarMonitoriasDTO>> consultarMonitoriasDisponiveis(Pageable pageable){
         Page<ConsultarMonitoriasDTO> dto = monitoriaService.consultarMonitoriasDisponiveis(pageable);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/{idMonitoria}/candidatos")
+    public ResponseEntity<List<ConsultarCandidatosDTO>> consultarCandidatos(@PathVariable Long idMonitoria){
+        List<ConsultarCandidatosDTO> candidatos = professorService.consultarCandidatos(idMonitoria);
+        return ResponseEntity.ok(candidatos);
     }
 
     @PostMapping(value = "/abrir")
