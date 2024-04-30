@@ -13,6 +13,7 @@ import com.yandemelo.monitorias.dto.errors.CustomError;
 import com.yandemelo.monitorias.dto.errors.ValidationError;
 import com.yandemelo.monitorias.exceptions.AlunoCandidatado;
 import com.yandemelo.monitorias.exceptions.AlunoNaoCandidatado;
+import com.yandemelo.monitorias.exceptions.CursosDiferentes;
 import com.yandemelo.monitorias.exceptions.InvalidFileException;
 import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
 
@@ -54,6 +55,13 @@ public class ClientControllerHandler {
 
     @ExceptionHandler(AlunoNaoCandidatado.class)
     public ResponseEntity<CustomError> alunoNaoCandidatado(AlunoNaoCandidatado e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+    
+    @ExceptionHandler(CursosDiferentes.class)
+    public ResponseEntity<CustomError> cursosDiferentes(CursosDiferentes e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);

@@ -23,8 +23,8 @@ public interface MonitoriaRepository extends JpaRepository<Monitoria, Long>{
                                                      @Param("semestre") String semestre, 
                                                      @Param("curso") CursosExistentes curso);
 
-    @Query("SELECT m FROM Monitoria m WHERE m.status = DISPONIVEL")                                                 
-    Page<Monitoria> consultarMonitoriasDisponiveis(Pageable pageable);
+    @Query("SELECT m FROM Monitoria m WHERE m.curso = :curso AND m.status = DISPONIVEL")                                                 
+    Page<Monitoria> consultarMonitoriasDisponiveis(CursosExistentes curso, Pageable pageable);
 
     @Query("SELECT m FROM Monitoria m WHERE m.monitorId.id = :candidato")   
     Monitoria buscarPorCandidato(Long candidato);

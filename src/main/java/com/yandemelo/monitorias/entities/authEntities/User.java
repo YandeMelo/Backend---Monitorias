@@ -10,9 +10,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.yandemelo.monitorias.entities.Monitoria;
+import com.yandemelo.monitorias.entities.enums.CursosExistentes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -44,6 +47,9 @@ public class User implements UserDetails{
     @NotBlank
     private String nome;
 
+    @Enumerated(EnumType.STRING)
+    private CursosExistentes curso;
+
     @NotBlank
     @Column(unique = true)
     private String cpf;
@@ -67,11 +73,12 @@ public class User implements UserDetails{
     @OneToMany(mappedBy = "professorId", fetch = FetchType.EAGER)
     private List<Monitoria> monitorias = new ArrayList<>();
     
-    public User(String nome, String cpf, String email, String fotoPerfil, Boolean ativo,
+    public User(String nome,  String cpf, CursosExistentes curso, String email, String fotoPerfil, Boolean ativo,
             LocalDate dataDesativacao, UserRole tipoUsuario, LocalDate dataCadastro, LocalDate ultimaAtualizacao,
             String encryptedPassword) {
                 this.nome = nome;
                 this.cpf = cpf;
+                this.curso = curso;
                 this.email = email;
                 this.fotoPerfil = fotoPerfil;
                 this.ativo = ativo;
