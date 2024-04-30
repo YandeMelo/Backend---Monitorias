@@ -2,6 +2,7 @@ package com.yandemelo.monitorias.dto;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.enums.CursosExistentes;
 import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AbrirMonitoriaDTO {
-
+    @JsonIgnore
     private Long id;
 
     @NotBlank
@@ -29,7 +30,7 @@ public class AbrirMonitoriaDTO {
     private CursosExistentes curso;
     @NotBlank
     private String semestre;
-    
+
     private Long professorId;
 
     @Enumerated(EnumType.STRING)
