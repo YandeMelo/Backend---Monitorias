@@ -1,6 +1,8 @@
 package com.yandemelo.monitorias.entities;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.entities.enums.CursosExistentes;
@@ -14,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -38,13 +41,16 @@ public class Monitoria {
     @ManyToOne
     @JoinColumn(name = "professor_id", nullable = false)
     private User professorId;
-
+    
     @OneToOne
     @JoinColumn(name = "monitor_id", nullable = true)
     private User monitorId;
-
+    
     private String disciplina;
-
+    
+    @OneToMany(mappedBy = "monitoriaId")
+    private Set<CandidatoMonitoria> candidatos = new HashSet<CandidatoMonitoria>();
+    
     @Enumerated(EnumType.STRING)
     private CursosExistentes curso;
     private String semestre;
