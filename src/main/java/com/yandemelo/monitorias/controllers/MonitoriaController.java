@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,6 +60,12 @@ public class MonitoriaController {
     @GetMapping("/{idMonitoria}/avaliar/{idAluno}")
     public ResponseEntity<AvaliarCandidatoDTO> avaliarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
         AvaliarCandidatoDTO dto = professorService.avaliarCandidato(idMonitoria, idAluno);
+        return ResponseEntity.ok(dto);
+    }
+    
+    @PutMapping("/{idMonitoria}/recusar/{idAluno}")
+    public ResponseEntity<AvaliarCandidatoDTO> recusarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
+        AvaliarCandidatoDTO dto = professorService.recusarCandidatura(idMonitoria, idAluno);
         return ResponseEntity.ok(dto);
     }
 
