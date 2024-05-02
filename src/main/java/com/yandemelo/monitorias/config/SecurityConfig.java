@@ -29,6 +29,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
         .requestMatchers(HttpMethod.GET, "/monitorias/disponiveis").hasRole("ALUNO")
+        .requestMatchers(HttpMethod.GET, "/monitorias/{idMonitoria}/avaliar/{idAluno}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/aluno/status").hasRole("ALUNO")
         .requestMatchers(HttpMethod.POST, "/monitorias/abrir").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.POST, "/monitorias/candidatar/{id}").hasRole("ALUNO")

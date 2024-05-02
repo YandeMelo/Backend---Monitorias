@@ -9,15 +9,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
+import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
 import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.entities.CandidatoMonitoria;
 import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
+import com.yandemelo.monitorias.exceptions.AlunoNaoCandidatado;
 import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
 import com.yandemelo.monitorias.exceptions.MonitoriaProfessorDiferente;
 import com.yandemelo.monitorias.repositories.CandidatoMonitoriaRepository;
 import com.yandemelo.monitorias.repositories.MonitoriaRepository;
+import com.yandemelo.monitorias.repositories.authRepositories.UserRepository;
 import com.yandemelo.monitorias.services.authServices.AuthorizationService;
 
 @Service
@@ -25,6 +28,8 @@ public class ProfessorService {
 
     @Autowired
     private AuthorizationService userService;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private MonitoriaRepository monitoriaRepository;
     @Autowired
@@ -44,7 +49,7 @@ public class ProfessorService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ConsultarCandidatosDTO> consultarCandidatos(Long idMonitoria){
         Monitoria monitoria = monitoriaRepository.getReferenceById(idMonitoria);
         User user = userService.authenticated();
@@ -53,6 +58,16 @@ public class ProfessorService {
         }
         List<CandidatoMonitoria> candidato = candidatoMonitoriaRepository.consultarCandidatos(idMonitoria);
         return candidato.stream().map(x -> new ConsultarCandidatosDTO(x)).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public AvaliarCandidatoDTO avaliarCandidato(Long idMonitoria, Long idAluno){
+        User aluno = userRepository.getReferenceById(idAluno);
+        CandidatoMonitoria monitoria = candidatoMonitoriaRepository.verInscricao(aluno);
+        if (monitoria == null) {
+            throw new AlunoNaoCandidatado("Este aluno não pertence a essa monitoria.");
+        }
+        return new AvaliarCandidatoDTO(aluno, monitoria);
     }
 
     public void salvarMonitoria(AbrirMonitoriaDTO dto, User user, Monitoria monitoria){

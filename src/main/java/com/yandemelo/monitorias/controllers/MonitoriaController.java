@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
+import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
 import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
@@ -53,6 +54,12 @@ public class MonitoriaController {
     public ResponseEntity<List<ConsultarCandidatosDTO>> consultarCandidatos(@PathVariable Long idMonitoria){
         List<ConsultarCandidatosDTO> candidatos = professorService.consultarCandidatos(idMonitoria);
         return ResponseEntity.ok(candidatos);
+    }
+
+    @GetMapping("/{idMonitoria}/avaliar/{idAluno}")
+    public ResponseEntity<AvaliarCandidatoDTO> avaliarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
+        AvaliarCandidatoDTO dto = professorService.avaliarCandidato(idMonitoria, idAluno);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping(value = "/abrir")
