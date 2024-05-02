@@ -74,17 +74,18 @@ public class ProfessorService {
     }
 
     @Transactional
-    public AvaliarCandidatoDTO recusarCandidatura(Long idMonitoria, Long idAluno){
+    public AvaliarCandidatoDTO aprovarOuRecusarCandidatura(Long idMonitoria, Long idAluno, StatusCandidatura status){
         User aluno = userRepository.findById(idAluno).orElseThrow(() -> new AlunoNaoCandidatado("Aluno não encontrado."));
         Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new MonitoriaExistenteException("Monitoria não encontrada."));
         CandidatoMonitoria inscricao = candidatoMonitoriaRepository.verInscricaoMonitoria(aluno, monitoria);
         if (inscricao == null) {
             throw new AlunoNaoCandidatado("Este aluno não está inscrito nessa monitoria.");
         }
-        inscricao.setStatusCandidatura(StatusCandidatura.RECUSADO);
+        inscricao.setStatusCandidatura(status);
         candidatoMonitoriaRepository.save(inscricao);
         return new AvaliarCandidatoDTO(aluno, inscricao);
     }
+
 
     public void salvarMonitoria(AbrirMonitoriaDTO dto, User user, Monitoria monitoria){
         try {
