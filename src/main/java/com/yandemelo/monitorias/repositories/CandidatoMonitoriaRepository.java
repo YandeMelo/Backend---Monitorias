@@ -21,5 +21,4 @@ public interface CandidatoMonitoriaRepository extends JpaRepository<CandidatoMon
         "WHERE m.id = :idMonitoria")
     List<CandidatoMonitoria> consultarCandidatos(Long idMonitoria);
 
-
 }
