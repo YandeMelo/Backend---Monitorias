@@ -14,6 +14,7 @@ import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.entities.CandidatoMonitoria;
 import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.authEntities.User;
+import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
 import com.yandemelo.monitorias.exceptions.AlunoNaoCandidatado;
 import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
@@ -40,7 +41,7 @@ public class ProfessorService {
         User user = userService.authenticated();
         Monitoria verificarMonitoria = monitoriaRepository.verificarMonitoriaExistente(user.getId(), dto.getDisciplina(), dto.getSemestre(), user.getCurso());
         if (verificarMonitoria != null) {
-            throw new MonitoriaExistenteException("Esta monitoria já está em aberto.");
+            throw new MonitoriaExistenteException("Esta monitoria já está aberta.");
         } else {
             Monitoria monitoria = new Monitoria();
             salvarMonitoria(dto, user, monitoria);
@@ -67,8 +68,21 @@ public class ProfessorService {
         Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new MonitoriaExistenteException("Monitoria não encontrada."));
         CandidatoMonitoria inscricao = candidatoMonitoriaRepository.verInscricaoMonitoria(aluno, monitoria);
         if (inscricao == null) {
-            throw new AlunoNaoCandidatado("Este aluno não pertence a essa monitoria.");
+            throw new AlunoNaoCandidatado("Este aluno não está inscrito nessa monitoria.");
         }
+        return new AvaliarCandidatoDTO(aluno, inscricao);
+    }
+
+    @Transactional
+    public AvaliarCandidatoDTO recusarCandidatura(Long idMonitoria, Long idAluno){
+        User aluno = userRepository.findById(idAluno).orElseThrow(() -> new AlunoNaoCandidatado("Aluno não encontrado."));
+        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new MonitoriaExistenteException("Monitoria não encontrada."));
+        CandidatoMonitoria inscricao = candidatoMonitoriaRepository.verInscricaoMonitoria(aluno, monitoria);
+        if (inscricao == null) {
+            throw new AlunoNaoCandidatado("Este aluno não está inscrito nessa monitoria.");
+        }
+        inscricao.setStatusCandidatura(StatusCandidatura.RECUSADO);
+        candidatoMonitoriaRepository.save(inscricao);
         return new AvaliarCandidatoDTO(aluno, inscricao);
     }
 
