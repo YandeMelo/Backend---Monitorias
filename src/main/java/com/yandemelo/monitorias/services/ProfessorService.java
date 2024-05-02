@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
 import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
+import com.yandemelo.monitorias.dto.MonitoriaDTO;
 import com.yandemelo.monitorias.entities.CandidatoMonitoria;
 import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.authEntities.User;
@@ -35,6 +36,13 @@ public class ProfessorService {
     private MonitoriaRepository monitoriaRepository;
     @Autowired
     private CandidatoMonitoriaRepository candidatoMonitoriaRepository;
+
+    @Transactional
+    public List<MonitoriaDTO> minhasMonitorias(){
+        User user = userService.authenticated();
+        List<Monitoria> monitoria = monitoriaRepository.buscarPorProfessor(user.getId());
+        return monitoria.stream().map(x -> new MonitoriaDTO(x)).collect(Collectors.toList());
+    }
 
     @Transactional
     public AbrirMonitoriaDTO ofertarMonitoria(AbrirMonitoriaDTO dto){
@@ -81,7 +89,9 @@ public class ProfessorService {
         if (inscricao == null) {
             throw new AlunoNaoCandidatado("Este aluno não está inscrito nessa monitoria.");
         }
+        monitoria.setStatus(StatusMonitoria.ANDAMENTO);
         inscricao.setStatusCandidatura(status);
+        inscricao.setUltimaAtualizacao(LocalDate.now());
         candidatoMonitoriaRepository.save(inscricao);
         return new AvaliarCandidatoDTO(aluno, inscricao);
     }
