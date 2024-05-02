@@ -24,6 +24,7 @@ import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
 import com.yandemelo.monitorias.entities.authEntities.User;
+import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 import com.yandemelo.monitorias.exceptions.InvalidFileException;
 import com.yandemelo.monitorias.services.AlunoService;
 import com.yandemelo.monitorias.services.MonitoriaService;
@@ -65,7 +66,13 @@ public class MonitoriaController {
     
     @PutMapping("/{idMonitoria}/recusar/{idAluno}")
     public ResponseEntity<AvaliarCandidatoDTO> recusarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
-        AvaliarCandidatoDTO dto = professorService.recusarCandidatura(idMonitoria, idAluno);
+        AvaliarCandidatoDTO dto = professorService.aprovarOuRecusarCandidatura(idMonitoria, idAluno, StatusCandidatura.RECUSADO);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/{idMonitoria}/aprovar/{idAluno}")
+    public ResponseEntity<AvaliarCandidatoDTO> aprovarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
+        AvaliarCandidatoDTO dto = professorService.aprovarOuRecusarCandidatura(idMonitoria, idAluno, StatusCandidatura.APROVADO);
         return ResponseEntity.ok(dto);
     }
 
