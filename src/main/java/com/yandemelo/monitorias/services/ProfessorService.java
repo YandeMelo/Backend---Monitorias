@@ -51,8 +51,9 @@ public class ProfessorService {
 
     @Transactional(readOnly = true)
     public List<ConsultarCandidatosDTO> consultarCandidatos(Long idMonitoria){
-        Monitoria monitoria = monitoriaRepository.getReferenceById(idMonitoria);
+        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new MonitoriaExistenteException("Esta monitoria não existe."));
         User user = userService.authenticated();
+        
         if (!monitoria.getProfessorId().getId().equals(user.getId())) {
             throw new MonitoriaProfessorDiferente("Esta monitoria pertence a outro professor.");
         }
@@ -62,12 +63,13 @@ public class ProfessorService {
 
     @Transactional(readOnly = true)
     public AvaliarCandidatoDTO avaliarCandidato(Long idMonitoria, Long idAluno){
-        User aluno = userRepository.getReferenceById(idAluno);
-        CandidatoMonitoria monitoria = candidatoMonitoriaRepository.verInscricao(aluno);
-        if (monitoria == null) {
+        User aluno = userRepository.findById(idAluno).orElseThrow(() -> new AlunoNaoCandidatado("Aluno não encontrado."));
+        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new MonitoriaExistenteException("Monitoria não encontrada."));
+        CandidatoMonitoria inscricao = candidatoMonitoriaRepository.verInscricaoMonitoria(aluno, monitoria);
+        if (inscricao == null) {
             throw new AlunoNaoCandidatado("Este aluno não pertence a essa monitoria.");
         }
-        return new AvaliarCandidatoDTO(aluno, monitoria);
+        return new AvaliarCandidatoDTO(aluno, inscricao);
     }
 
     public void salvarMonitoria(AbrirMonitoriaDTO dto, User user, Monitoria monitoria){
