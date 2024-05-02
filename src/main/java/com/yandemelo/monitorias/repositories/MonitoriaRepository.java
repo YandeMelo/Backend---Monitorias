@@ -1,5 +1,7 @@
 package com.yandemelo.monitorias.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,6 +30,9 @@ public interface MonitoriaRepository extends JpaRepository<Monitoria, Long>{
 
     @Query("SELECT m FROM Monitoria m WHERE m.monitorId.id = :candidato")   
     Monitoria buscarPorCandidato(Long candidato);
+    
+    @Query("SELECT m FROM Monitoria m WHERE m.professorId.id = :professor")   
+    List<Monitoria> buscarPorProfessor(Long professor);
 
 
 }
