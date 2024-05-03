@@ -11,20 +11,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.yandemelo.monitorias.dto.errors.CustomError;
 import com.yandemelo.monitorias.dto.errors.ValidationError;
-import com.yandemelo.monitorias.exceptions.AlunoCandidatado;
-import com.yandemelo.monitorias.exceptions.AlunoNaoCandidatado;
-import com.yandemelo.monitorias.exceptions.CursosDiferentes;
-import com.yandemelo.monitorias.exceptions.InvalidFileException;
-import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
-import com.yandemelo.monitorias.exceptions.MonitoriaProfessorDiferente;
+import com.yandemelo.monitorias.exceptions.AlunoCandidaturaException;
+import com.yandemelo.monitorias.exceptions.ForbiddenException;
+import com.yandemelo.monitorias.exceptions.BadRequestException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class ClientControllerHandler {
     
-    @ExceptionHandler(MonitoriaExistenteException.class)
-    public ResponseEntity<CustomError> customName(MonitoriaExistenteException e, HttpServletRequest request) {
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<CustomError> customName(BadRequestException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
@@ -40,37 +37,18 @@ public class ClientControllerHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(InvalidFileException.class)
-    public ResponseEntity<CustomError> invalidFileException(InvalidFileException e, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(status).body(err);
-    }
-
-    @ExceptionHandler(AlunoCandidatado.class)
-    public ResponseEntity<CustomError> alunoCandidatado(AlunoCandidatado e, HttpServletRequest request) {
+    @ExceptionHandler(AlunoCandidaturaException.class)
+    public ResponseEntity<CustomError> alunoCandidatado(AlunoCandidaturaException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
         ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(AlunoNaoCandidatado.class)
-    public ResponseEntity<CustomError> alunoNaoCandidatado(AlunoNaoCandidatado e, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(status).body(err);
-    }
-    
-    @ExceptionHandler(CursosDiferentes.class)
-    public ResponseEntity<CustomError> cursosDiferentes(CursosDiferentes e, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
-        return ResponseEntity.status(status).body(err);
-    }
-    @ExceptionHandler(MonitoriaProfessorDiferente.class)
-    public ResponseEntity<CustomError> monitoriaProfessorDiferente(MonitoriaProfessorDiferente e, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ValidationError err = new ValidationError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomError> forbidden(ForbiddenException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 }
