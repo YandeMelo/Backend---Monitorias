@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,14 +15,17 @@ import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
 import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.dto.MonitoriaDTO;
+import com.yandemelo.monitorias.entities.Arquivo;
 import com.yandemelo.monitorias.entities.CandidatoMonitoria;
 import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
 import com.yandemelo.monitorias.exceptions.AlunoNaoCandidatado;
+import com.yandemelo.monitorias.exceptions.FileNotFoundException;
 import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
 import com.yandemelo.monitorias.exceptions.MonitoriaProfessorDiferente;
+import com.yandemelo.monitorias.repositories.ArquivoRepository;
 import com.yandemelo.monitorias.repositories.CandidatoMonitoriaRepository;
 import com.yandemelo.monitorias.repositories.MonitoriaRepository;
 import com.yandemelo.monitorias.repositories.authRepositories.UserRepository;
@@ -32,6 +38,8 @@ public class ProfessorService {
     private AuthorizationService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ArquivoRepository arquivoRepository;
     @Autowired
     private MonitoriaRepository monitoriaRepository;
     @Autowired
@@ -99,6 +107,20 @@ public class ProfessorService {
         return new AvaliarCandidatoDTO(aluno, inscricao);
     }
 
+    @Transactional
+    public ResponseEntity<ByteArrayResource> baixarHistoricoEscolar(Long idAluno){
+        Arquivo arquivo = arquivoRepository.getArquivoPorIdAluno(idAluno);
+        if (arquivo == null) {
+            throw new FileNotFoundException("Arquivo não encontrado.");
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + arquivo.getNomeArquivo());
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
+        headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(arquivo.getConteudo().length));
+        return ResponseEntity.ok()
+            .headers(headers)
+            .body(new ByteArrayResource(arquivo.getConteudo()));
+    }
 
     public void salvarMonitoria(AbrirMonitoriaDTO dto, User user, Monitoria monitoria){
         try {
