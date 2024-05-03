@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.yandemelo.monitorias.dto.candidaturaAluno.BuscarStatusCandidatura;
+import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
+import com.yandemelo.monitorias.dto.candidaturaAluno.BuscarStatusCandidaturaDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.StatusMonitoriaDTO;
 import com.yandemelo.monitorias.entities.Arquivo;
@@ -37,15 +38,25 @@ public class AlunoService {
     private AuthorizationService userService;
 
     @Transactional(readOnly = true)
-    public BuscarStatusCandidatura statusCandidatura (){
+    public BuscarStatusCandidaturaDTO statusCandidatura (){
         User user = userService.authenticated();
         CandidatoMonitoria candidato = candidatoMonitoriaRepository.verInscricao(user);
         if (candidato == null) {
             throw new AlunoNaoCandidatado("Você não está candidatado em nenhuma monitoria.");
         }
         StatusMonitoriaDTO monitoria = new StatusMonitoriaDTO(candidato.getMonitoriaId());
-        return new BuscarStatusCandidatura(candidato, monitoria);
+        return new BuscarStatusCandidaturaDTO(candidato, monitoria);
     }
+
+    @Transactional(readOnly = true)
+    public ConsultarMonitoriasDTO statusMonitoria() {
+        User user = userService.authenticated();
+        Monitoria monitoria = monitoriaRepository.buscarPorCandidato(user.getId());
+        if (monitoria == null) {
+            throw new AlunoNaoCandidatado("Você ainda não foi aceito em nenhuma monitoria.");
+        }
+        return new ConsultarMonitoriasDTO(monitoria);
+     }
 
      @Transactional
     public CandidatarAlunoDTO candidatarAluno(Long monitoriaId, MultipartFile historicoEscolar){
@@ -107,4 +118,5 @@ public class AlunoService {
 
         }
     }
+
 }

@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BuscarStatusCandidatura {
+public class BuscarStatusCandidaturaDTO {
 
 
     private StatusMonitoriaDTO monitoriaId;
     private LocalDate dataSolicitacao;
     private StatusCandidatura statusCandidatura;
     
-    public BuscarStatusCandidatura(CandidatoMonitoria candidato, StatusMonitoriaDTO monitoria) {
+    public BuscarStatusCandidaturaDTO(CandidatoMonitoria candidato, StatusMonitoriaDTO monitoria) {
         monitoriaId = monitoria;
         dataSolicitacao = candidato.getDataSolicitacao();
         statusCandidatura = candidato.getStatusCandidatura();
