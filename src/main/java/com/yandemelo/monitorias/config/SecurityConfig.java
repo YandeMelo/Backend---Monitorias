@@ -36,6 +36,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET, "/professor/aprovar/{idAluno}/{idMonitoria}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/professor/candidatos/{idMonitoria}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/professor/monitorias").hasRole("PROFESSOR")
+        .requestMatchers(HttpMethod.GET, "/professor/historico/{idAluno}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/aluno/inscricao").hasRole("ALUNO")
         .requestMatchers(HttpMethod.GET, "/aluno/monitoria").hasRole("ALUNO")
         .anyRequest().authenticated())

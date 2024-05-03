@@ -3,6 +3,7 @@ package com.yandemelo.monitorias.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +41,12 @@ public class ProfessorController {
         AvaliarCandidatoDTO dto = professorService.avaliarCandidato(idMonitoria, idAluno);
         return ResponseEntity.ok(dto);
     }
-    
+
+    @GetMapping("historico/{idAluno}")
+    public ResponseEntity<ByteArrayResource> download(@PathVariable Long idAluno) {
+        return professorService.baixarHistoricoEscolar(idAluno);
+    }
+
     @PutMapping("recusar/{idAluno}/{idMonitoria}")
     public ResponseEntity<AvaliarCandidatoDTO> recusarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
         AvaliarCandidatoDTO dto = professorService.aprovarOuRecusarCandidatura(idMonitoria, idAluno, StatusCandidatura.RECUSADO);
