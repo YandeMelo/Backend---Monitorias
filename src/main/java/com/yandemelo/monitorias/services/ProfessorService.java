@@ -90,6 +90,9 @@ public class ProfessorService {
             throw new AlunoNaoCandidatado("Este aluno não está inscrito nessa monitoria.");
         }
         monitoria.setStatus(StatusMonitoria.ANDAMENTO);
+        monitoria.setMonitorId(aluno);
+        monitoria.setUltimaAtualizacao(LocalDate.now());
+        monitoriaRepository.save(monitoria);
         inscricao.setStatusCandidatura(status);
         inscricao.setUltimaAtualizacao(LocalDate.now());
         candidatoMonitoriaRepository.save(inscricao);
