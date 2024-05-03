@@ -20,12 +20,16 @@ import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
 import com.yandemelo.monitorias.entities.authEntities.User;
-import com.yandemelo.monitorias.exceptions.InvalidFileException;
+import com.yandemelo.monitorias.exceptions.ResourceNotFoundException;
 import com.yandemelo.monitorias.services.AlunoService;
 import com.yandemelo.monitorias.services.MonitoriaService;
 import com.yandemelo.monitorias.services.ProfessorService;
 import com.yandemelo.monitorias.services.authServices.AuthorizationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
 @RestController
@@ -41,12 +45,22 @@ public class MonitoriaController {
     @Autowired
     private AlunoService alunoService;
 
+    @Operation(summary = "Buscar monitorias disponíveis")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+    })
     @GetMapping(value = "/disponiveis")
     public ResponseEntity<Page<ConsultarMonitoriasDTO>> consultarMonitoriasDisponiveis(Pageable pageable){
         Page<ConsultarMonitoriasDTO> dto = monitoriaService.consultarMonitoriasDisponiveis(pageable);
         return ResponseEntity.ok(dto);
     }
 
+    @Operation(summary = "Ofertar monitoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Created"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
+    })
     @PostMapping(value = "/abrir")
     public ResponseEntity<AbrirMonitoriaDTO> ofertarMonitoria(@Valid @RequestBody AbrirMonitoriaDTO dto){
         AbrirMonitoriaDTO monitoriaDTO = professorService.ofertarMonitoria(dto);
@@ -58,10 +72,16 @@ public class MonitoriaController {
         }
     }
 
+    @Operation(summary = "Candidatar aluno na monitoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Created"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "404", description = "Not Found", content = @Content())
+    })
     @PostMapping(value = "/candidatar/{idMonitoria}")
     public ResponseEntity<CandidatarAlunoDTO> candidatarAlunoMonitoria(@PathVariable Long idMonitoria, @Valid @RequestBody MultipartFile historicoEscolar){
         if (historicoEscolar.isEmpty()){
-            throw new InvalidFileException("Histórico Escolar (PDF) necessário para a candidatura.");
+            throw new ResourceNotFoundException("Histórico Escolar (PDF) necessário para a candidatura.");
         }
         CandidatarAlunoDTO candidatoMonitoria = alunoService.candidatarAluno(idMonitoria, historicoEscolar);
         User user = userService.authenticated();

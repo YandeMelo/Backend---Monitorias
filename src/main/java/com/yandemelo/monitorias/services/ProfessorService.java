@@ -21,10 +21,8 @@ import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
-import com.yandemelo.monitorias.exceptions.AlunoNaoCandidatado;
-import com.yandemelo.monitorias.exceptions.FileNotFoundException;
-import com.yandemelo.monitorias.exceptions.MonitoriaExistenteException;
-import com.yandemelo.monitorias.exceptions.MonitoriaProfessorDiferente;
+import com.yandemelo.monitorias.exceptions.BadRequestException;
+import com.yandemelo.monitorias.exceptions.ResourceNotFoundException;
 import com.yandemelo.monitorias.repositories.ArquivoRepository;
 import com.yandemelo.monitorias.repositories.CandidatoMonitoriaRepository;
 import com.yandemelo.monitorias.repositories.MonitoriaRepository;
@@ -57,7 +55,7 @@ public class ProfessorService {
         User user = userService.authenticated();
         Monitoria verificarMonitoria = monitoriaRepository.verificarMonitoriaExistente(user.getId(), dto.getDisciplina(), dto.getSemestre(), user.getCurso());
         if (verificarMonitoria != null) {
-            throw new MonitoriaExistenteException("Esta monitoria já está aberta.");
+            throw new BadRequestException("Esta monitoria já está aberta.");
         } else {
             Monitoria monitoria = new Monitoria();
             salvarMonitoria(dto, user, monitoria);
@@ -68,11 +66,11 @@ public class ProfessorService {
 
     @Transactional(readOnly = true)
     public List<ConsultarCandidatosDTO> consultarCandidatos(Long idMonitoria){
-        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new MonitoriaExistenteException("Esta monitoria não existe."));
+        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new BadRequestException("Esta monitoria não existe."));
         User user = userService.authenticated();
         
         if (!monitoria.getProfessorId().getId().equals(user.getId())) {
-            throw new MonitoriaProfessorDiferente("Esta monitoria pertence a outro professor.");
+            throw new BadRequestException("Esta monitoria pertence a outro professor.");
         }
         List<CandidatoMonitoria> candidato = candidatoMonitoriaRepository.consultarCandidatos(idMonitoria);
         return candidato.stream().map(x -> new ConsultarCandidatosDTO(x)).collect(Collectors.toList());
@@ -80,22 +78,22 @@ public class ProfessorService {
 
     @Transactional(readOnly = true)
     public AvaliarCandidatoDTO avaliarCandidato(Long idMonitoria, Long idAluno){
-        User aluno = userRepository.findById(idAluno).orElseThrow(() -> new AlunoNaoCandidatado("Aluno não encontrado."));
-        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new MonitoriaExistenteException("Monitoria não encontrada."));
+        User aluno = userRepository.findById(idAluno).orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado."));
+        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new BadRequestException("Monitoria não encontrada."));
         CandidatoMonitoria inscricao = candidatoMonitoriaRepository.verInscricaoMonitoria(aluno, monitoria);
         if (inscricao == null) {
-            throw new AlunoNaoCandidatado("Este aluno não está inscrito nessa monitoria.");
+            throw new ResourceNotFoundException("Este aluno não está inscrito nessa monitoria.");
         }
         return new AvaliarCandidatoDTO(aluno, inscricao);
     }
 
     @Transactional
     public AvaliarCandidatoDTO aprovarOuRecusarCandidatura(Long idMonitoria, Long idAluno, StatusCandidatura status){
-        User aluno = userRepository.findById(idAluno).orElseThrow(() -> new AlunoNaoCandidatado("Aluno não encontrado."));
-        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new MonitoriaExistenteException("Monitoria não encontrada."));
+        User aluno = userRepository.findById(idAluno).orElseThrow(() -> new ResourceNotFoundException("Aluno não encontrado."));
+        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new BadRequestException("Monitoria não encontrada."));
         CandidatoMonitoria inscricao = candidatoMonitoriaRepository.verInscricaoMonitoria(aluno, monitoria);
         if (inscricao == null) {
-            throw new AlunoNaoCandidatado("Este aluno não está inscrito nessa monitoria.");
+            throw new ResourceNotFoundException("Este aluno não está inscrito nessa monitoria.");
         }
         monitoria.setStatus(StatusMonitoria.ANDAMENTO);
         monitoria.setMonitorId(aluno);
@@ -111,7 +109,7 @@ public class ProfessorService {
     public ResponseEntity<ByteArrayResource> baixarHistoricoEscolar(Long idAluno){
         Arquivo arquivo = arquivoRepository.getArquivoPorIdAluno(idAluno);
         if (arquivo == null) {
-            throw new FileNotFoundException("Arquivo não encontrado.");
+            throw new ResourceNotFoundException("Arquivo não encontrado.");
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + arquivo.getNomeArquivo());

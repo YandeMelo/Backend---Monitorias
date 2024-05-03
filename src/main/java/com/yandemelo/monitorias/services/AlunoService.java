@@ -16,10 +16,10 @@ import com.yandemelo.monitorias.entities.CandidatoMonitoria;
 import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
-import com.yandemelo.monitorias.exceptions.AlunoCandidatado;
-import com.yandemelo.monitorias.exceptions.AlunoNaoCandidatado;
-import com.yandemelo.monitorias.exceptions.CursosDiferentes;
-import com.yandemelo.monitorias.exceptions.InvalidFileException;
+import com.yandemelo.monitorias.exceptions.AlunoCandidaturaException;
+import com.yandemelo.monitorias.exceptions.BadRequestException;
+import com.yandemelo.monitorias.exceptions.MethodArgumentNotValidException;
+import com.yandemelo.monitorias.exceptions.ResourceNotFoundException;
 import com.yandemelo.monitorias.repositories.ArquivoRepository;
 import com.yandemelo.monitorias.repositories.CandidatoMonitoriaRepository;
 import com.yandemelo.monitorias.repositories.MonitoriaRepository;
@@ -42,7 +42,7 @@ public class AlunoService {
         User user = userService.authenticated();
         CandidatoMonitoria candidato = candidatoMonitoriaRepository.verInscricao(user);
         if (candidato == null) {
-            throw new AlunoNaoCandidatado("Você não está candidatado em nenhuma monitoria.");
+            throw new AlunoCandidaturaException("Você não está candidatado em nenhuma monitoria.");
         }
         StatusMonitoriaDTO monitoria = new StatusMonitoriaDTO(candidato.getMonitoriaId());
         return new BuscarStatusCandidaturaDTO(candidato, monitoria);
@@ -53,7 +53,7 @@ public class AlunoService {
         User user = userService.authenticated();
         Monitoria monitoria = monitoriaRepository.buscarPorCandidato(user.getId());
         if (monitoria == null) {
-            throw new AlunoNaoCandidatado("Você ainda não foi aceito em nenhuma monitoria.");
+            throw new AlunoCandidaturaException("Você ainda não foi aceito em nenhuma monitoria.");
         }
         return new ConsultarMonitoriasDTO(monitoria);
      }
@@ -61,12 +61,13 @@ public class AlunoService {
      @Transactional
     public CandidatarAlunoDTO candidatarAluno(Long monitoriaId, MultipartFile historicoEscolar){
         User user = userService.authenticated();
-        Monitoria monitoria = monitoriaRepository.getReferenceById(monitoriaId);
+        Monitoria monitoria = monitoriaRepository.findById(monitoriaId).orElseThrow(() -> new ResourceNotFoundException("Monitoria não encontrada."));
+    
         if (user.getCurso() != monitoria.getCurso()) {
-            throw new CursosDiferentes("Esta monitoria não está disponível para o seu curso.");
+            throw new BadRequestException("Esta monitoria não está disponível para o seu curso.");
         }
         if (!historicoEscolar.getContentType().equals("application/pdf")) {
-            throw new InvalidFileException("Tipo de arquivo inválido, apenas PDF's.");
+            throw new MethodArgumentNotValidException("Tipo de arquivo inválido, apenas PDF's.");
         } 
         
         Arquivo arquivoParaSalvar = arquivoRepository.getArquivoPorIdAluno(user.getId());
@@ -85,7 +86,7 @@ public class AlunoService {
                 salvarCandidato(candidato, user, monitoria, arquivoParaSalvar);
                 candidatoMonitoriaRepository.save(candidato);
             } else {
-                throw new AlunoCandidatado("Aluno já inscrito em outra monitoria.");
+                throw new AlunoCandidaturaException("Aluno já inscrito em outra monitoria.");
             }
 
             StatusMonitoriaDTO dto = new StatusMonitoriaDTO(monitoria);

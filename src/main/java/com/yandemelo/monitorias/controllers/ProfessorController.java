@@ -17,6 +17,11 @@ import com.yandemelo.monitorias.dto.MonitoriaDTO;
 import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 import com.yandemelo.monitorias.services.ProfessorService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/professor")
 public class ProfessorController {
@@ -24,35 +29,69 @@ public class ProfessorController {
     @Autowired
     private ProfessorService professorService;
 
+    @Operation(summary = "Monitorias abertas pelo professor")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+    })
     @GetMapping("/monitorias")
     public ResponseEntity<List<MonitoriaDTO>> minhasMonitorias (){
         List<MonitoriaDTO> monitorias = professorService.minhasMonitorias();
         return ResponseEntity.ok(monitorias);
     }
 
+    @Operation(summary = "Verificar candidatos da monitoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
+    })
     @GetMapping("candidatos/{idMonitoria}")
     public ResponseEntity<List<ConsultarCandidatosDTO>> consultarCandidatos(@PathVariable Long idMonitoria){
         List<ConsultarCandidatosDTO> candidatos = professorService.consultarCandidatos(idMonitoria);
         return ResponseEntity.ok(candidatos);
     }
     
+    @Operation(summary = "Verificar perfil do aluno candidatado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "404", description = "Not Found", content = @Content())
+    })
     @GetMapping("avaliar/{idAluno}/{idMonitoria}")
     public ResponseEntity<AvaliarCandidatoDTO> avaliarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
         AvaliarCandidatoDTO dto = professorService.avaliarCandidato(idMonitoria, idAluno);
         return ResponseEntity.ok(dto);
     }
 
+    @Operation(summary = "Baixar histórico escolar")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "404", description = "Not Found", content = @Content())
+    })
     @GetMapping("historico/{idAluno}")
     public ResponseEntity<ByteArrayResource> download(@PathVariable Long idAluno) {
         return professorService.baixarHistoricoEscolar(idAluno);
     }
 
+    @Operation(summary = "Recusar candidato na monitoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "404", description = "Not Found", content = @Content())
+    })
     @PutMapping("recusar/{idAluno}/{idMonitoria}")
     public ResponseEntity<AvaliarCandidatoDTO> recusarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
         AvaliarCandidatoDTO dto = professorService.aprovarOuRecusarCandidatura(idMonitoria, idAluno, StatusCandidatura.RECUSADO);
         return ResponseEntity.ok(dto);
     }
 
+    @Operation(summary = "Aprovar candidato na monitoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "400", description = "Not Found", content = @Content())
+    })
     @PutMapping("aprovar/{idAluno}/{idMonitoria}")
     public ResponseEntity<AvaliarCandidatoDTO> aprovarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
         AvaliarCandidatoDTO dto = professorService.aprovarOuRecusarCandidatura(idMonitoria, idAluno, StatusCandidatura.APROVADO);
