@@ -3,7 +3,6 @@ package com.yandemelo.monitorias.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -53,7 +52,7 @@ public class AlunoServiceTest {
     void testStatusCandidaturaInscrito() {
         User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
         User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
-        Monitoria monitoria = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
+        Monitoria monitoria = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
         
         byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
         Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
@@ -72,13 +71,10 @@ public class AlunoServiceTest {
     @DisplayName("Status da candidatura caso o aluno não esteja inscrito")
     void testStatusCandidaturaNaoInscrito(){    
         User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
-        User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
-        Monitoria monitoria = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
         
         when(userService.authenticated()).thenReturn(aluno);
         when(candidatoMonitoriaRepository.verInscricao(aluno)).thenReturn(null);
 
-        assertNull(monitoria.getCandidatos());
         assertThat(candidatoMonitoriaRepository.verInscricao(aluno)).isNull();
     }
 
@@ -87,7 +83,7 @@ public class AlunoServiceTest {
     void testStatusMonitoriaAceito() {
         User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
         User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
-        Monitoria monitoria = new Monitoria(1L, professor, aluno, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.ANDAMENTO, LocalDate.now(), LocalDate.now());
+        Monitoria monitoria = new Monitoria(1L, professor, aluno, "MATEMÁTICA_DISCRETA", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.ANDAMENTO, LocalDate.now(), LocalDate.now());
         
         byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
         Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
@@ -109,7 +105,7 @@ public class AlunoServiceTest {
     void testStatusMonitoriaNaoAceito() {
         User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
         User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
-        Monitoria monitoria = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
+        Monitoria monitoria = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
         
         byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
         Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
@@ -131,7 +127,7 @@ public class AlunoServiceTest {
     void testCandidatarAluno() {
         User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
         User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
-        Monitoria monitoriaAberta = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
+        Monitoria monitoriaAberta = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
         
         byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
         Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
@@ -156,7 +152,7 @@ public class AlunoServiceTest {
     void testCandidatarAlunoJaCandidatado() {
         User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
         User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
-        Monitoria monitoriaAberta = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
+        Monitoria monitoriaAberta = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
         
         byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
         Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
