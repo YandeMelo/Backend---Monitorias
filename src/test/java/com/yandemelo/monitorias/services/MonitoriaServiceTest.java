@@ -47,7 +47,7 @@ public class MonitoriaServiceTest {
     void testConsultarMonitoriasDisponiveis() {
         User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
         User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
-        Monitoria monitoria = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
+        Monitoria monitoria = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
 
         when(userService.authenticated()).thenReturn(aluno);
 
