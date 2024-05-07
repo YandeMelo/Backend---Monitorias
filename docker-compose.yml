@@ -13,6 +13,8 @@ services:
       - DATABASE_PASSWORD=postgres
     depends_on: 
       - monitorias-db
+    networks:
+      - monitorias-network
 
   monitorias-db:
     image: postgres
@@ -23,3 +25,9 @@ services:
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - monitorias-network
+
+networks:
+  monitorias-network:
+    driver: bridge
