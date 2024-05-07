@@ -1,10 +1,13 @@
 package com.yandemelo.monitorias.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -80,23 +83,97 @@ public class AlunoServiceTest {
     }
 
     @Test
+    @DisplayName("Status da monitoria que o aluno foi aceito")
+    void testStatusMonitoriaAceito() {
+        User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
+        User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
+        Monitoria monitoria = new Monitoria(1L, professor, aluno, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.ANDAMENTO, LocalDate.now(), LocalDate.now());
+        
+        byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
+        Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
+        
+        when(userService.authenticated()).thenReturn(aluno);
+        CandidatoMonitoria candidatoMonitoria = new CandidatoMonitoria(1L, aluno, monitoria, arquivo, LocalDate.now(), StatusCandidatura.APROVADO, monitoria.getDataCadastro(), monitoria.getUltimaAtualizacao());
+        
+        when(monitoriaRepository.buscarPorCandidato(aluno.getId())).thenReturn(monitoria);
+
+        assertEquals(monitoria.getMonitorId(), aluno);
+        assertEquals(candidatoMonitoria.getMonitoriaId(), monitoria);
+        assertEquals(candidatoMonitoria.getAlunoId(), aluno);
+        assertEquals(candidatoMonitoria.getStatusCandidatura(), StatusCandidatura.APROVADO);
+        assertNotEquals(monitoria.getStatus(), StatusMonitoria.DISPONIVEL);
+    }
+
+    @Test
+    @DisplayName("Status da monitoria que o aluno ainda não foi aceito")
+    void testStatusMonitoriaNaoAceito() {
+        User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
+        User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
+        Monitoria monitoria = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
+        
+        byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
+        Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
+        
+        when(userService.authenticated()).thenReturn(aluno);
+        CandidatoMonitoria candidatoMonitoria = new CandidatoMonitoria(1L, aluno, monitoria, arquivo, LocalDate.now(), StatusCandidatura.RECUSADO, monitoria.getDataCadastro(), monitoria.getUltimaAtualizacao());
+        
+        when(monitoriaRepository.buscarPorCandidato(aluno.getId())).thenReturn(null);
+
+        assertNotEquals(monitoria.getMonitorId(), aluno);
+        assertNotEquals(candidatoMonitoria.getStatusCandidatura(), StatusCandidatura.APROVADO);
+        assertEquals(candidatoMonitoria.getAlunoId(), aluno);
+        assertEquals(candidatoMonitoria.getMonitoriaId(), monitoria);
+        assertEquals(monitoria.getStatus(), StatusMonitoria.DISPONIVEL);
+    }
+
+    @Test
+    @DisplayName("Candidatar aluno em uma monitoria")
     void testCandidatarAluno() {
-
+        User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
+        User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
+        Monitoria monitoriaAberta = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
+        
+        byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
+        Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
+        
+        when(userService.authenticated()).thenReturn(aluno);
+        Optional<Monitoria> monitoria = this.monitoriaRepository.findById(1L);
+        when(monitoriaRepository.findById(1L)).thenReturn(monitoria);
+        arquivoRepository.save(arquivo);
+        
+        when( candidatoMonitoriaRepository.verInscricao(aluno)).thenReturn(null);
+        CandidatoMonitoria candidatoMonitoria = new CandidatoMonitoria(1L, aluno, monitoriaAberta, arquivo, LocalDate.now(), StatusCandidatura.AGUARDANDO_APROVACAO, monitoriaAberta.getDataCadastro(), monitoriaAberta.getUltimaAtualizacao());
+ 
+        assertEquals(candidatoMonitoria.getStatusCandidatura(), StatusCandidatura.AGUARDANDO_APROVACAO);
+        assertEquals(candidatoMonitoria.getAlunoId(), aluno);
+        assertEquals(candidatoMonitoria.getMonitoriaId(), monitoriaAberta);
+        assertEquals(aluno.getCurso(), monitoriaAberta.getCurso());
+        assertEquals(monitoriaAberta.getStatus(), StatusMonitoria.DISPONIVEL);
     }
 
     @Test
-    void testSalvarArquivo() {
-
+    @DisplayName("Aluno já candidatado me outra monitoria")
+    void testCandidatarAlunoJaCandidatado() {
+        User aluno = new User("Yan Melo", "123456789-00", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "yanmelo@gmail.com", "fotoPerfil.com", true, null, UserRole.ALUNO, LocalDate.now(), LocalDate.now(), "123456789");
+        User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
+        Monitoria monitoriaAberta = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", null, CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
+        
+        byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
+        Arquivo arquivo = new Arquivo(1L, aluno.getId(), "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
+        
+        when(userService.authenticated()).thenReturn(aluno);
+        Optional<Monitoria> monitoria = this.monitoriaRepository.findById(1L);
+        when(monitoriaRepository.findById(1L)).thenReturn(monitoria);
+        arquivoRepository.save(arquivo);
+        
+        CandidatoMonitoria candidatoMonitoria = new CandidatoMonitoria(1L, aluno, monitoriaAberta, arquivo, LocalDate.now(), StatusCandidatura.AGUARDANDO_APROVACAO, monitoriaAberta.getDataCadastro(), monitoriaAberta.getUltimaAtualizacao());
+        when( candidatoMonitoriaRepository.verInscricao(aluno)).thenReturn(candidatoMonitoria);
+ 
+        assertEquals(candidatoMonitoria.getStatusCandidatura(), StatusCandidatura.AGUARDANDO_APROVACAO);
+        assertEquals(candidatoMonitoria.getAlunoId(), aluno);
+        assertEquals(candidatoMonitoria.getMonitoriaId(), monitoriaAberta);
+        assertEquals(aluno.getCurso(), monitoriaAberta.getCurso());
+        assertEquals(monitoriaAberta.getStatus(), StatusMonitoria.DISPONIVEL);
     }
 
-    @Test
-    void testSalvarCandidato() {
-
-    }
-
-
-    @Test
-    void testStatusMonitoria() {
-
-    }
 }
