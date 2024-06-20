@@ -54,6 +54,18 @@ public class MonitoriaController {
     public ResponseEntity<Page<ConsultarMonitoriasDTO>> consultarMonitoriasDisponiveis(Pageable pageable){
         Page<ConsultarMonitoriasDTO> dto = monitoriaService.consultarMonitoriasDisponiveis(pageable);
         return ResponseEntity.ok(dto);
+    
+    }
+
+    @Operation(summary = "Buscar monitoria específica")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content()),
+    })
+    @GetMapping(value = "/info/{idMonitoria}")
+    public ResponseEntity<ConsultarMonitoriasDTO> consultarInfoMonitoria(@PathVariable Long idMonitoria){
+        ConsultarMonitoriasDTO dto = monitoriaService.consultarInfoMonitoria(idMonitoria);
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(summary = "Ofertar monitoria")

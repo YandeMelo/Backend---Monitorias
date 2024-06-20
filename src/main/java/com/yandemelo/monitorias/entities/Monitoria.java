@@ -53,4 +53,5 @@ public class Monitoria {
     private StatusMonitoria status;
     private LocalDate dataCadastro;
     private LocalDate ultimaAtualizacao;
+    
 }
