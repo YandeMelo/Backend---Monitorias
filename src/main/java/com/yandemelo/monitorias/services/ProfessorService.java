@@ -99,10 +99,10 @@ public class ProfessorService {
         }
         if (status == StatusCandidatura.APROVADO) {
             monitoria.setStatus(StatusMonitoria.ANDAMENTO);
+            monitoria.setMonitorId(aluno);
         } else {
             monitoria.setStatus(StatusMonitoria.DISPONIVEL);
         }
-        monitoria.setMonitorId(aluno);
         monitoria.setUltimaAtualizacao(LocalDate.now());
         monitoriaRepository.save(monitoria);
         inscricao.setStatusCandidatura(status);
