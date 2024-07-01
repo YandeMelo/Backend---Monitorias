@@ -97,7 +97,11 @@ public class ProfessorService {
         if (inscricao == null) {
             throw new ResourceNotFoundException("Este aluno não está inscrito nessa monitoria.");
         }
-        monitoria.setStatus(StatusMonitoria.ANDAMENTO);
+        if (status == StatusCandidatura.APROVADO) {
+            monitoria.setStatus(StatusMonitoria.ANDAMENTO);
+        } else {
+            monitoria.setStatus(StatusMonitoria.DISPONIVEL);
+        }
         monitoria.setMonitorId(aluno);
         monitoria.setUltimaAtualizacao(LocalDate.now());
         monitoriaRepository.save(monitoria);
