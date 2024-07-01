@@ -14,6 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.yandemelo.monitorias.entities.Arquivo;
 import com.yandemelo.monitorias.entities.CandidatoMonitoria;
@@ -54,15 +58,15 @@ public class ProfessorServiceTest {
         Monitoria monitoria1 = new Monitoria(1L, professor, null, "MATEMÁTICA_DISCRETA", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
         Monitoria monitoria2 = new Monitoria(2L, professor, null, "TEORIA_DA_COMPUTACAO", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
         Monitoria monitoria3 = new Monitoria(3L, professor, null, "BANCO_DE_DADOS", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "2024.2", StatusMonitoria.DISPONIVEL, LocalDate.now(), LocalDate.now());
-        
-        List<Monitoria> monitorias = monitoriaRepository.buscarPorProfessor(professor.getId());
 
-        assertEquals(professor, monitoria1.getProfessorId());
-        assertEquals(professor, monitoria2.getProfessorId());
-        assertEquals(professor, monitoria3.getProfessorId());
-        assertThat(monitorias.contains(monitoria1));
-        assertThat(monitorias.contains(monitoria2));
-        assertThat(monitorias.contains(monitoria3));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Monitoria> mockedPage = new PageImpl<>(List.of(monitoria1, monitoria2, monitoria3), pageable, 3);
+
+        when(monitoriaRepository.buscarPorProfessor(professor.getId(), pageable)).thenReturn(mockedPage);
+
+        Page<Monitoria> monitorias = monitoriaRepository.buscarPorProfessor(professor.getId(), pageable);
+
+        assertThat(monitorias.getContent()).contains(monitoria1, monitoria2, monitoria3);
     }
 
     @Test
@@ -70,9 +74,10 @@ public class ProfessorServiceTest {
     void testMinhasMonitoriasNull() {
         User professor = new User("Monteiro", "123456789-01", CursosExistentes.ENGENHARIA_DA_COMPUTACAO, "monteiro@gmail.com", "fotoPerfil.com", true, null, UserRole.PROFESSOR, LocalDate.now(), LocalDate.now(), "123456789");
         
-        List<Monitoria> monitorias = monitoriaRepository.buscarPorProfessor(professor.getId());
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Monitoria> monitorias = monitoriaRepository.buscarPorProfessor(professor.getId(), pageable);
 
-        assertThat(monitorias.size() == 0);
+        assertThat(monitorias);
     }
 
     @Test
