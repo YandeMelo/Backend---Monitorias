@@ -64,7 +64,7 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Abrange todas as rotas
-                    .allowedOrigins("http://localhost:4200") // Permite a origem específica
+                    .allowedOrigins("http://localhost:4200", "https://monitorias-two.vercel.app") // Permite a origem específica
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT")
                     .allowedHeaders("*") // Permite todos os cabeçalhos
                     .exposedHeaders("Authorization", "Link", "X-Total-Count") // Expor os cabeçalhos necessários
