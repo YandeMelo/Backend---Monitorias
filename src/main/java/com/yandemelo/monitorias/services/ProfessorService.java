@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,10 +46,10 @@ public class ProfessorService {
     private CandidatoMonitoriaRepository candidatoMonitoriaRepository;
 
     @Transactional
-    public List<MonitoriaDTO> minhasMonitorias(){
+    public Page<MonitoriaDTO> minhasMonitorias(Pageable pageable){
         User user = userService.authenticated();
-        List<Monitoria> monitoria = monitoriaRepository.buscarPorProfessor(user.getId());
-        return monitoria.stream().map(x -> new MonitoriaDTO(x)).collect(Collectors.toList());
+        Page<Monitoria> monitorias = monitoriaRepository.buscarPorProfessor(user.getId(), pageable);
+        return monitorias.map(x -> new MonitoriaDTO(x));
     }
 
     @Transactional

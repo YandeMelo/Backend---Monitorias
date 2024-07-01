@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,8 +37,8 @@ public class ProfessorController {
         @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
     })
     @GetMapping("/monitorias")
-    public ResponseEntity<List<MonitoriaDTO>> minhasMonitorias (){
-        List<MonitoriaDTO> monitorias = professorService.minhasMonitorias();
+    public ResponseEntity<Page<MonitoriaDTO>> minhasMonitorias (Pageable pageable){
+        Page<MonitoriaDTO> monitorias = professorService.minhasMonitorias(pageable);
         return ResponseEntity.ok(monitorias);
     }
 
