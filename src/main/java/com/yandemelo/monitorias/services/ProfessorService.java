@@ -1,6 +1,7 @@
 package com.yandemelo.monitorias.services;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -53,6 +54,13 @@ public class ProfessorService {
     @Transactional
     public MonitoriaDTO suspenderMonitoria(Long idMonitoria){
         Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new BadRequestException("Esta monitoria não existe."));
+        List<CandidatoMonitoria> candidaturas = candidatoMonitoriaRepository.consultarCandidaturas(idMonitoria);
+        if (candidaturas != null) {
+            for (CandidatoMonitoria candidatura : candidaturas){
+                candidatura.setStatusCandidatura(StatusCandidatura.CANCELADO);
+                candidatoMonitoriaRepository.save(candidatura);
+            }
+        }
         monitoria.setStatus(StatusMonitoria.SUSPENSA);
         monitoria.setUltimaAtualizacao(LocalDate.now());
         monitoriaRepository.save(monitoria);
