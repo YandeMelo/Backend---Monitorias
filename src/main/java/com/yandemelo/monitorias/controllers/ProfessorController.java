@@ -1,7 +1,5 @@
 package com.yandemelo.monitorias.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -48,8 +46,8 @@ public class ProfessorController {
         @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
     })
     @GetMapping("candidatos/{idMonitoria}")
-    public ResponseEntity<List<ConsultarCandidatosDTO>> consultarCandidatos(@PathVariable Long idMonitoria){
-        List<ConsultarCandidatosDTO> candidatos = professorService.consultarCandidatos(idMonitoria);
+    public ResponseEntity<Page<ConsultarCandidatosDTO>> consultarCandidatos(@PathVariable Long idMonitoria, Pageable pageable){
+        Page<ConsultarCandidatosDTO> candidatos = professorService.consultarCandidatos(idMonitoria, pageable);
         return ResponseEntity.ok(candidatos);
     }
     

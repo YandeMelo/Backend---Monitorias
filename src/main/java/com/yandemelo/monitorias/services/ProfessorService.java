@@ -1,8 +1,6 @@
 package com.yandemelo.monitorias.services;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -67,15 +65,15 @@ public class ProfessorService {
     }
 
     @Transactional(readOnly = true)
-    public List<ConsultarCandidatosDTO> consultarCandidatos(Long idMonitoria){
+    public Page<ConsultarCandidatosDTO> consultarCandidatos(Long idMonitoria, Pageable pageable){
         Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new BadRequestException("Esta monitoria não existe."));
         User user = userService.authenticated();
         
         if (!monitoria.getProfessorId().getId().equals(user.getId())) {
             throw new BadRequestException("Esta monitoria pertence a outro professor.");
         }
-        List<CandidatoMonitoria> candidato = candidatoMonitoriaRepository.consultarCandidatos(idMonitoria);
-        return candidato.stream().map(x -> new ConsultarCandidatosDTO(x)).collect(Collectors.toList());
+        Page<CandidatoMonitoria> candidato = candidatoMonitoriaRepository.consultarCandidatos(idMonitoria, pageable);
+        return candidato.map(x -> new ConsultarCandidatosDTO(x));
     }
 
     @Transactional(readOnly = true)
