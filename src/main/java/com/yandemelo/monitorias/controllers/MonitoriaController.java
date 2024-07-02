@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
+import com.yandemelo.monitorias.dto.MonitoriaDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.exceptions.ResourceNotFoundException;
@@ -82,6 +84,17 @@ public class MonitoriaController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @Operation(summary = "Suspender monitoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Created"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content())
+    })
+    @PutMapping(value = "/suspender/{idMonitoria}")
+    public ResponseEntity<MonitoriaDTO> suspenderMonitoria(@PathVariable Long idMonitoria){
+        MonitoriaDTO dto = professorService.suspenderMonitoria(idMonitoria);
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(summary = "Candidatar aluno na monitoria")

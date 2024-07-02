@@ -34,6 +34,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET, "/monitorias/disponiveis").hasRole("ALUNO")
         .requestMatchers(HttpMethod.GET, "/monitorias/info/{idMonitoria}").hasRole("ALUNO")
         .requestMatchers(HttpMethod.POST, "/monitorias/abrir").hasRole("PROFESSOR")
+        .requestMatchers(HttpMethod.POST, "/monitorias/suspender/{id}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.POST, "/monitorias/candidatar/{id}").hasRole("ALUNO")
         .requestMatchers(HttpMethod.GET, "/professor/avaliar/{idAluno}/{idMonitoria}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/professor/recusar/{idAluno}/{idMonitoria}").hasRole("PROFESSOR")
