@@ -51,6 +51,15 @@ public class ProfessorService {
     }
 
     @Transactional
+    public MonitoriaDTO suspenderMonitoria(Long idMonitoria){
+        Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new BadRequestException("Esta monitoria não existe."));
+        monitoria.setStatus(StatusMonitoria.SUSPENSA);
+        monitoria.setUltimaAtualizacao(LocalDate.now());
+        monitoriaRepository.save(monitoria);
+        return new MonitoriaDTO(monitoria);
+    }
+
+    @Transactional
     public AbrirMonitoriaDTO ofertarMonitoria(AbrirMonitoriaDTO dto){
         User user = userService.authenticated();
         Monitoria verificarMonitoria = monitoriaRepository.verificarMonitoriaExistente(user.getId(), dto.getDisciplina(), dto.getSemestre(), user.getCurso());
