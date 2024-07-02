@@ -1,7 +1,7 @@
 package com.yandemelo.monitorias.repositories;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -23,7 +23,7 @@ public interface CandidatoMonitoriaRepository extends JpaRepository<CandidatoMon
         "INNER JOIN cm.monitoriaId m " +
         "INNER JOIN cm.pdfHistoricoEscolar a " +
         "WHERE m.id = :idMonitoria")
-    List<CandidatoMonitoria> consultarCandidatos(Long idMonitoria);
+    Page<CandidatoMonitoria> consultarCandidatos(Long idMonitoria, Pageable pageable);
 
 
 }
