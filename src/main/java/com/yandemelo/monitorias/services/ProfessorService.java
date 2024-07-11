@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
+import com.yandemelo.monitorias.dto.AvaliarMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.dto.MonitoriaDTO;
 import com.yandemelo.monitorias.entities.Arquivo;
@@ -102,6 +103,15 @@ public class ProfessorService {
             throw new ResourceNotFoundException("Este aluno não está inscrito nessa monitoria.");
         }
         return new AvaliarCandidatoDTO(aluno, inscricao);
+    }
+
+    @Transactional(readOnly = true)
+    public AvaliarMonitoriaDTO avaliarMonitoria(Long idMonitoria){
+        CandidatoMonitoria inscricao = candidatoMonitoriaRepository.consultarAlunoEMonitoria(idMonitoria);
+        if (inscricao == null) {
+            throw new ResourceNotFoundException("Este aluno não está inscrito nessa monitoria.");
+        }
+        return new AvaliarMonitoriaDTO(inscricao);
     }
 
     @Transactional

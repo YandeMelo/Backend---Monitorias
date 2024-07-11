@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
+import com.yandemelo.monitorias.dto.AvaliarMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.dto.MonitoriaDTO;
 import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
@@ -60,6 +61,18 @@ public class ProfessorController {
     @GetMapping("avaliar/{idAluno}/{idMonitoria}")
     public ResponseEntity<AvaliarCandidatoDTO> avaliarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
         AvaliarCandidatoDTO dto = professorService.avaliarCandidato(idMonitoria, idAluno);
+        return ResponseEntity.ok(dto);
+    }
+
+    @Operation(summary = "Verificar monitoria e monitor atual")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "404", description = "Not Found", content = @Content())
+    })
+    @GetMapping("/monitoria/avaliar/{idMonitoria}")
+    public ResponseEntity<AvaliarMonitoriaDTO> avaliarMonitoria(@PathVariable Long idMonitoria){
+        AvaliarMonitoriaDTO dto = professorService.avaliarMonitoria(idMonitoria);
         return ResponseEntity.ok(dto);
     }
 
