@@ -85,9 +85,9 @@ public class ProfessorController {
         @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
         @ApiResponse(responseCode = "404", description = "Not Found", content = @Content())
     })
-    @GetMapping("historico/{idAluno}")
-    public ResponseEntity<ByteArrayResource> download(@PathVariable Long idAluno) {
-        return professorService.baixarHistoricoEscolar(idAluno);
+    @GetMapping("historico/{idArquivo}")
+    public ResponseEntity<ByteArrayResource> download(@PathVariable Long idArquivo) {
+        return professorService.baixarHistoricoEscolar(idArquivo);
     }
 
     @Operation(summary = "Recusar candidato na monitoria")

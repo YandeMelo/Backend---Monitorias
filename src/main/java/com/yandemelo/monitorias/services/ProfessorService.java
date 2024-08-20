@@ -138,8 +138,8 @@ public class ProfessorService {
     }
 
     @Transactional
-    public ResponseEntity<ByteArrayResource> baixarHistoricoEscolar(Long idAluno){
-        Arquivo arquivo = arquivoRepository.getArquivoPorIdAluno(idAluno);
+    public ResponseEntity<ByteArrayResource> baixarHistoricoEscolar(Long idArquivo){
+        Arquivo arquivo = arquivoRepository.getArquivoPorId(idArquivo);
         if (arquivo == null) {
             throw new ResourceNotFoundException("Arquivo não encontrado.");
         }
