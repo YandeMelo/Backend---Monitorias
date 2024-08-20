@@ -1,10 +1,14 @@
 package com.yandemelo.monitorias.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.BuscarStatusCandidaturaDTO;
@@ -14,6 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/aluno")
@@ -44,5 +49,10 @@ public class AlunoController {
     public ResponseEntity<ConsultarMonitoriasDTO> statusMonitoria(){
         ConsultarMonitoriasDTO dto = alunoService.statusMonitoria();
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping(value = "/adicionarRelatorio")
+    public ResponseEntity<ByteArrayResource> adicionarArquivo(@Valid @RequestBody MultipartFile relatorio){
+        return alunoService.adicionarRelatorio(relatorio);
     }
 }

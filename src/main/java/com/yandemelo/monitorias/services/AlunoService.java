@@ -3,6 +3,9 @@ package com.yandemelo.monitorias.services;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +41,7 @@ public class AlunoService {
     private AuthorizationService userService;
 
     @Transactional(readOnly = true)
-    public BuscarStatusCandidaturaDTO statusCandidatura (){
+    public BuscarStatusCandidaturaDTO statusCandidatura() {
         User user = userService.authenticated();
         CandidatoMonitoria candidato = candidatoMonitoriaRepository.verInscricao(user);
         if (candidato == null) {
@@ -56,20 +59,21 @@ public class AlunoService {
             throw new AlunoCandidaturaException("Você ainda não foi aceito em nenhuma monitoria.");
         }
         return new ConsultarMonitoriasDTO(monitoria);
-     }
+    }
 
-     @Transactional
-    public CandidatarAlunoDTO candidatarAluno(Long monitoriaId, MultipartFile historicoEscolar){
+    @Transactional
+    public CandidatarAlunoDTO candidatarAluno(Long monitoriaId, MultipartFile historicoEscolar) {
         User user = userService.authenticated();
-        Monitoria monitoria = monitoriaRepository.findById(monitoriaId).orElseThrow(() -> new ResourceNotFoundException("Monitoria não encontrada."));
-    
+        Monitoria monitoria = monitoriaRepository.findById(monitoriaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Monitoria não encontrada."));
+
         if (user.getCurso() != monitoria.getCurso()) {
             throw new BadRequestException("Esta monitoria não está disponível para o seu curso.");
         }
         if (!historicoEscolar.getContentType().equals("application/pdf")) {
             throw new MethodArgumentNotValidException("Tipo de arquivo inválido, apenas PDF's.");
-        } 
-        
+        }
+
         Arquivo arquivoParaSalvar = arquivoRepository.getArquivoPorIdAluno(user.getId());
         if (arquivoParaSalvar != null) {
             arquivoParaSalvar.setId(arquivoParaSalvar.getId());
@@ -80,20 +84,42 @@ public class AlunoService {
             salvarArquivo(arquivoParaSalvar, historicoEscolar, user);
             arquivoRepository.save(arquivoParaSalvar);
         }
-            CandidatoMonitoria candidato = candidatoMonitoriaRepository.verInscricao(user);
-            if (candidato == null) {
-                candidato = new CandidatoMonitoria();
-                salvarCandidato(candidato, user, monitoria, arquivoParaSalvar);
-                candidatoMonitoriaRepository.save(candidato);
-            } else {
-                throw new AlunoCandidaturaException("Aluno já inscrito em outra monitoria.");
-            }
+        CandidatoMonitoria candidato = candidatoMonitoriaRepository.verInscricao(user);
+        if (candidato == null) {
+            candidato = new CandidatoMonitoria();
+            salvarCandidato(candidato, user, monitoria, arquivoParaSalvar);
+            candidatoMonitoriaRepository.save(candidato);
+        } else {
+            throw new AlunoCandidaturaException("Aluno já inscrito em outra monitoria.");
+        }
 
-            StatusMonitoriaDTO dto = new StatusMonitoriaDTO(monitoria);
-            return new CandidatarAlunoDTO(user, dto);
+        StatusMonitoriaDTO dto = new StatusMonitoriaDTO(monitoria);
+        return new CandidatarAlunoDTO(user, dto);
     }
 
-    public void salvarArquivo(Arquivo arquivoParaSalvar, MultipartFile historicoEscolar, User user){
+    @Transactional
+    public ResponseEntity<ByteArrayResource> adicionarRelatorio(MultipartFile relatorio){
+        try {
+            User user = userService.authenticated();
+            Arquivo arquivo = new Arquivo();
+            salvarArquivo(arquivo, relatorio, user);
+            arquivoRepository.save(arquivo);
+            CandidatoMonitoria candidatura = candidatoMonitoriaRepository.consultarAlunoCandidatado(user.getId());
+            candidatura.setRelatorioMonitoria(arquivo);
+            candidatoMonitoriaRepository.save(candidatura);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + arquivo.getNomeArquivo());
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
+            headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(arquivo.getConteudo().length));
+            return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ByteArrayResource(arquivo.getConteudo()));
+        } catch (Exception e) {
+            throw new BadRequestException("Arquivo já existente.");
+        }
+    }
+
+    public void salvarArquivo(Arquivo arquivoParaSalvar, MultipartFile historicoEscolar, User user) {
         try {
             arquivoParaSalvar.setConteudo(historicoEscolar.getBytes());
             arquivoParaSalvar.setDataCadastro(LocalDate.now());
@@ -101,12 +127,13 @@ public class AlunoService {
             arquivoParaSalvar.setNomeArquivo(historicoEscolar.getOriginalFilename());
             arquivoParaSalvar.setUltimaAtualizacao(LocalDate.now());
         } catch (Exception e) {
-            
+
         }
 
     }
 
-    public void salvarCandidato (CandidatoMonitoria candidato, User user, Monitoria monitoria, Arquivo arquivoParaSalvar){
+    public void salvarCandidato(CandidatoMonitoria candidato, User user, Monitoria monitoria,
+            Arquivo arquivoParaSalvar) {
         try {
             candidato.setDataCadastro(LocalDate.now());
             candidato.setDataSolicitacao(LocalDate.now());

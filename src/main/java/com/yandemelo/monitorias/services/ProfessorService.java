@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yandemelo.monitorias.dto.AbrirMonitoriaDTO;
 import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
@@ -149,6 +150,26 @@ public class ProfessorService {
         return ResponseEntity.ok()
             .headers(headers)
             .body(new ByteArrayResource(arquivo.getConteudo()));
+    }
+
+    @Transactional
+    public ResponseEntity<ByteArrayResource> alterarRelatorio(Long idAluno, Long idArquivo, MultipartFile relatorio){
+        try {
+            Arquivo arquivo = arquivoRepository.getArquivo(idArquivo, idAluno);
+            arquivo.setConteudo(relatorio.getBytes());
+            arquivo.setNomeArquivo(relatorio.getName());
+            arquivo.setUltimaAtualizacao(LocalDate.now());
+            arquivoRepository.save(arquivo);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + arquivo.getNomeArquivo());
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
+            headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(arquivo.getConteudo().length));
+            return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ByteArrayResource(arquivo.getConteudo()));
+        } catch (Exception e) {
+            throw new ResourceNotFoundException("Arquivo não encontrado.");
+        }
     }
 
     public void salvarMonitoria(AbrirMonitoriaDTO dto, User user, Monitoria monitoria){

@@ -3,6 +3,7 @@ package com.yandemelo.monitorias.controllers;
 import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -114,4 +115,14 @@ public class MonitoriaController {
         return ResponseEntity.created(uri).body(candidatoMonitoria);
     }
 
+    @Operation(summary = "Baixar Relatório")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "404", description = "Not Found", content = @Content())
+    })
+    @GetMapping("arquivo/{idAluno}/{idArquivo}")
+    public ResponseEntity<ByteArrayResource> baixarArquivo(@PathVariable Long idAluno, @PathVariable Long idArquivo) {
+        return monitoriaService.baixarArquivo(idArquivo, idAluno);
+    }
 }

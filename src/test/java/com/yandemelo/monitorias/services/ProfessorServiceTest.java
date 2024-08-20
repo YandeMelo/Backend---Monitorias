@@ -201,7 +201,7 @@ public class ProfessorServiceTest {
         byte[] dadosArquivo = "Dados simulados do arquivo".getBytes();
         Arquivo arquivo = new Arquivo(1L, 1L, "Histórico Escolar Aluno", dadosArquivo, LocalDate.now(), LocalDate.now());
         
-        when(arquivoRepository.getArquivoPorIdAluno(1L)).thenReturn(arquivo);
+        when(arquivoRepository.getArquivo(1L, 1L)).thenReturn(arquivo);
 
         assertNotNull(arquivo);
         assertNotNull(arquivo.getNomeArquivo());

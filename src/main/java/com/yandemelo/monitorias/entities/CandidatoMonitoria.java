@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
 public class CandidatoMonitoria {
     @Id
@@ -46,6 +44,10 @@ public class CandidatoMonitoria {
     @JoinColumn(name = "historico_escolar_id")
     private Arquivo pdfHistoricoEscolar;
 
+    @OneToOne
+    @JoinColumn(name = "relatorio_monitoria_id")
+    private Arquivo relatorioMonitoria;
+
     @NotNull
     private LocalDate dataSolicitacao;
 
@@ -55,5 +57,16 @@ public class CandidatoMonitoria {
 
     private LocalDate dataCadastro;
     private LocalDate ultimaAtualizacao;
+
+    public CandidatoMonitoria(Long id, User alunoId, Monitoria monitoriaId, Arquivo pdfHistoricoEscolar, LocalDate dataSolicitacao, StatusCandidatura statusCandidatura, LocalDate dataCadastro, LocalDate ultimaAtualizacao) {
+        this.id = id;
+        this.alunoId = alunoId;
+        this.monitoriaId = monitoriaId;
+        this.pdfHistoricoEscolar = pdfHistoricoEscolar;
+        this.dataSolicitacao = dataSolicitacao;
+        this.statusCandidatura = statusCandidatura;
+        this.dataCadastro = dataCadastro;
+        this.ultimaAtualizacao = ultimaAtualizacao;
+    }
 
 }

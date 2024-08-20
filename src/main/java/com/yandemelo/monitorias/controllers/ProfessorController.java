@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
 import com.yandemelo.monitorias.dto.AvaliarMonitoriaDTO;
@@ -22,6 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/professor")
@@ -109,6 +112,17 @@ public class ProfessorController {
     public ResponseEntity<AvaliarCandidatoDTO> aprovarCandidato(@PathVariable Long idMonitoria, @PathVariable Long idAluno){
         AvaliarCandidatoDTO dto = professorService.aprovarOuRecusarCandidatura(idMonitoria, idAluno, StatusCandidatura.APROVADO);
         return ResponseEntity.ok(dto);
+    }
+
+    @Operation(summary = "Alterar Relatorio")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "400", description = "Not Found", content = @Content())
+    })
+    @PutMapping("/alterarRelatorio/{idAluno}/{idArquivo}")
+    public ResponseEntity<ByteArrayResource> alterarRelatorio(@PathVariable Long idAluno, @PathVariable Long idArquivo, @Valid @RequestBody MultipartFile relatorio){
+        return professorService.alterarRelatorio(idAluno, idArquivo, relatorio);
     }
 
 }

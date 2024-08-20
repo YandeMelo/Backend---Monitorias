@@ -30,6 +30,13 @@ public interface CandidatoMonitoriaRepository extends JpaRepository<CandidatoMon
         "FROM CandidatoMonitoria cm " +
         "INNER JOIN cm.alunoId u " +
         "INNER JOIN cm.monitoriaId m " +
+        "WHERE m.monitorId.id = :idMonitor")
+    CandidatoMonitoria consultarAlunoCandidatado(Long idMonitor);
+
+    @Query("SELECT cm " +
+        "FROM CandidatoMonitoria cm " +
+        "INNER JOIN cm.alunoId u " +
+        "INNER JOIN cm.monitoriaId m " +
         "INNER JOIN cm.pdfHistoricoEscolar a " +
         "WHERE m.id = :idMonitoria")
     Page<CandidatoMonitoria> consultarCandidatos(Long idMonitoria, Pageable pageable);
