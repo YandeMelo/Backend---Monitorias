@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.yandemelo.monitorias.entities.Monitoria;
 import com.yandemelo.monitorias.entities.enums.CursosExistentes;
+import com.yandemelo.monitorias.entities.enums.StatusMonitoria;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class StatusMonitoriaDTO {
     private String professor;
     private String semestre;
     private LocalDate ultimaAtualizacao;
+    private StatusMonitoria statusMonitoria;
 
     public StatusMonitoriaDTO(Monitoria monitoria) {
         professor = monitoria.getProfessorId().getNome();
@@ -26,6 +28,8 @@ public class StatusMonitoriaDTO {
         curso = monitoria.getCurso();
         semestre = monitoria.getSemestre();
         ultimaAtualizacao = monitoria.getUltimaAtualizacao();
+        statusMonitoria = monitoria.getStatus();
+        
     }
 
 }

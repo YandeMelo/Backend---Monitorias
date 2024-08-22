@@ -24,10 +24,12 @@ public class AvaliarMonitoriaDTO {
     private LocalDate dataCadastro;
     private LocalDate ultimaAtualizacao;
 
+    private Long alunoId;
     private String nome;
     private String email;
     private String fotoPerfil;
     private Long idHistoricoEscolar;
+    private Long idRelatorioMonitoria;
 
     public AvaliarMonitoriaDTO(CandidatoMonitoria monitoria) {
         monitoriaId = monitoria.getMonitoriaId().getId();
@@ -39,10 +41,16 @@ public class AvaliarMonitoriaDTO {
         dataCadastro = monitoria.getDataCadastro();
         ultimaAtualizacao = monitoria.getUltimaAtualizacao();
 
+        alunoId = monitoria.getAlunoId().getId();
         nome = monitoria.getAlunoId().getNome();
         email = monitoria.getAlunoId().getEmail();
         fotoPerfil = monitoria.getAlunoId().getFotoPerfil();
         idHistoricoEscolar = monitoria.getPdfHistoricoEscolar().getId();
+        if (monitoria.getRelatorioMonitoria() != null) {
+            idRelatorioMonitoria = monitoria.getRelatorioMonitoria().getId();
+        } else {
+            idRelatorioMonitoria = null;
+        }
     }
 
 }

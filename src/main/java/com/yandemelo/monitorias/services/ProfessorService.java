@@ -153,20 +153,23 @@ public class ProfessorService {
     }
 
     @Transactional
-    public ResponseEntity<ByteArrayResource> alterarRelatorio(Long idAluno, Long idArquivo, MultipartFile relatorio){
+    public ResponseEntity<ByteArrayResource> alterarRelatorio(Long idAluno, Long idArquivo, Long idMonitoria, MultipartFile relatorio){
         try {
             Arquivo arquivo = arquivoRepository.getArquivo(idArquivo, idAluno);
             arquivo.setConteudo(relatorio.getBytes());
-            arquivo.setNomeArquivo(relatorio.getName());
+            arquivo.setNomeArquivo(relatorio.getOriginalFilename());
             arquivo.setUltimaAtualizacao(LocalDate.now());
             arquivoRepository.save(arquivo);
+
+            Monitoria monitoria = monitoriaRepository.findById(idMonitoria).orElseThrow(() -> new BadRequestException("Monitoria não encontrada."));
+            monitoria.setStatus(StatusMonitoria.FINALIZADA);
+            monitoriaRepository.save(monitoria);
+
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + arquivo.getNomeArquivo());
-            headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
+            headers.add(HttpHeaders.CONTENT_TYPE, relatorio.getContentType());
             headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(arquivo.getConteudo().length));
-            return ResponseEntity.ok()
-                .headers(headers)
-                .body(new ByteArrayResource(arquivo.getConteudo()));
+            return ResponseEntity.ok(null);
         } catch (Exception e) {
             throw new ResourceNotFoundException("Arquivo não encontrado.");
         }

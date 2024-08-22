@@ -14,13 +14,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BuscarStatusCandidaturaDTO {
 
-
     private StatusMonitoriaDTO monitoriaId;
+    private Long idRelatorio;
     private LocalDate dataSolicitacao;
     private StatusCandidatura statusCandidatura;
     
     public BuscarStatusCandidaturaDTO(CandidatoMonitoria candidato, StatusMonitoriaDTO monitoria) {
         monitoriaId = monitoria;
+        if (candidato.getRelatorioMonitoria() != null) {
+            idRelatorio = candidato.getRelatorioMonitoria().getId();
+        } else {
+            idRelatorio = null;
+        }
         dataSolicitacao = candidato.getDataSolicitacao();
         statusCandidatura = candidato.getStatusCandidatura();
     }

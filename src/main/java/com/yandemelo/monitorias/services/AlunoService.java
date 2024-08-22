@@ -111,9 +111,7 @@ public class AlunoService {
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + arquivo.getNomeArquivo());
             headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf");
             headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(arquivo.getConteudo().length));
-            return ResponseEntity.ok()
-                .headers(headers)
-                .body(new ByteArrayResource(arquivo.getConteudo()));
+            return ResponseEntity.ok(null);
         } catch (Exception e) {
             throw new BadRequestException("Arquivo já existente.");
         }

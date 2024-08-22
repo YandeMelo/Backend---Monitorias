@@ -44,9 +44,10 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET, "/professor/monitorias").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/professor/monitoria/avaliar/{idMonitoria}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/professor/historico/{idArquivo}").hasRole("PROFESSOR")
+        .requestMatchers(HttpMethod.GET, "/professor/alterarRelatorio/{idAluno}/{idArquivo}/{idMonitoria}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/aluno/inscricao").hasRole("ALUNO")
         .requestMatchers(HttpMethod.GET, "/aluno/monitoria").hasRole("ALUNO")
-        .requestMatchers(HttpMethod.POST, "/aluno/relatorio").hasRole("ALUNO")
+        .requestMatchers(HttpMethod.POST, "/aluno/adicionarRelatorio").hasRole("ALUNO")
         .anyRequest().authenticated())
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         .build();

@@ -120,9 +120,9 @@ public class ProfessorController {
         @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
         @ApiResponse(responseCode = "400", description = "Not Found", content = @Content())
     })
-    @PutMapping("/alterarRelatorio/{idAluno}/{idArquivo}")
-    public ResponseEntity<ByteArrayResource> alterarRelatorio(@PathVariable Long idAluno, @PathVariable Long idArquivo, @Valid @RequestBody MultipartFile relatorio){
-        return professorService.alterarRelatorio(idAluno, idArquivo, relatorio);
+    @PutMapping("/alterarRelatorio/{idAluno}/{idArquivo}/{idMonitoria}")
+    public ResponseEntity<ByteArrayResource> alterarRelatorio(@PathVariable Long idAluno, @PathVariable Long idArquivo, @PathVariable Long idMonitoria, @Valid @RequestBody MultipartFile relatorio){
+        return professorService.alterarRelatorio(idAluno, idArquivo, idMonitoria, relatorio);
     }
 
 }
