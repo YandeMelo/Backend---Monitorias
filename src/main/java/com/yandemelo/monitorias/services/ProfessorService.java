@@ -18,6 +18,7 @@ import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
 import com.yandemelo.monitorias.dto.AvaliarMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.dto.MonitoriaDTO;
+import com.yandemelo.monitorias.dto.UserDTO;
 import com.yandemelo.monitorias.entities.Arquivo;
 import com.yandemelo.monitorias.entities.CandidatoMonitoria;
 import com.yandemelo.monitorias.entities.Monitoria;
@@ -173,6 +174,12 @@ public class ProfessorService {
         } catch (Exception e) {
             throw new ResourceNotFoundException("Arquivo não encontrado.");
         }
+    }
+
+    @Transactional
+    public UserDTO getUser(){
+        User user = userService.authenticated();
+        return new UserDTO(user);
     }
 
     public void salvarMonitoria(AbrirMonitoriaDTO dto, User user, Monitoria monitoria){

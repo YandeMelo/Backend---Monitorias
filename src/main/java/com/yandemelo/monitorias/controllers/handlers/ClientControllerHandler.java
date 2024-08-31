@@ -1,5 +1,6 @@
 package com.yandemelo.monitorias.controllers.handlers;
 
+import java.io.FileNotFoundException;
 import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,13 @@ public class ClientControllerHandler {
     public ResponseEntity<CustomError> customName(BadRequestException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<CustomError> fileNotFoundException(FileNotFoundException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        CustomError err = new CustomError(Instant.now(), status.value(), "Arquivo não encontrado.", request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 

@@ -17,6 +17,7 @@ import com.yandemelo.monitorias.dto.AvaliarCandidatoDTO;
 import com.yandemelo.monitorias.dto.AvaliarMonitoriaDTO;
 import com.yandemelo.monitorias.dto.ConsultarCandidatosDTO;
 import com.yandemelo.monitorias.dto.MonitoriaDTO;
+import com.yandemelo.monitorias.dto.UserDTO;
 import com.yandemelo.monitorias.entities.enums.StatusCandidatura;
 import com.yandemelo.monitorias.services.ProfessorService;
 
@@ -123,6 +124,18 @@ public class ProfessorController {
     @PutMapping("/alterarRelatorio/{idAluno}/{idArquivo}/{idMonitoria}")
     public ResponseEntity<ByteArrayResource> alterarRelatorio(@PathVariable Long idAluno, @PathVariable Long idArquivo, @PathVariable Long idMonitoria, @Valid @RequestBody MultipartFile relatorio){
         return professorService.alterarRelatorio(idAluno, idArquivo, idMonitoria, relatorio);
+    }
+
+    @Operation(summary = "Dados do Usuário")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content())
+    })
+    @GetMapping(value = "/user")
+    public ResponseEntity<UserDTO> getUser(){
+        UserDTO dto = professorService.getUser();
+        return ResponseEntity.ok(dto);
     }
 
 }

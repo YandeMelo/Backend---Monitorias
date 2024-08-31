@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
+import com.yandemelo.monitorias.dto.UserDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.BuscarStatusCandidaturaDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.CandidatarAlunoDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.StatusMonitoriaDTO;
@@ -115,6 +116,12 @@ public class AlunoService {
         } catch (Exception e) {
             throw new BadRequestException("Arquivo já existente.");
         }
+    }
+
+    @Transactional
+    public UserDTO getUser(){
+        User user = userService.authenticated();
+        return new UserDTO(user);
     }
 
     public void salvarArquivo(Arquivo arquivoParaSalvar, MultipartFile historicoEscolar, User user) {

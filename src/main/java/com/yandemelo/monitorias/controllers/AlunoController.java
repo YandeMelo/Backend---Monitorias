@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yandemelo.monitorias.dto.ConsultarMonitoriasDTO;
+import com.yandemelo.monitorias.dto.UserDTO;
 import com.yandemelo.monitorias.dto.candidaturaAluno.BuscarStatusCandidaturaDTO;
 import com.yandemelo.monitorias.services.AlunoService;
 
@@ -51,8 +52,21 @@ public class AlunoController {
         return ResponseEntity.ok(dto);
     }
 
+    @Operation(summary = "Dados do Usuário")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content()),
+        @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content())
+    })
+    @GetMapping(value = "/user")
+    public ResponseEntity<UserDTO> getUser(){
+        UserDTO dto = alunoService.getUser();
+        return ResponseEntity.ok(dto);
+    }
+
     @PostMapping(value = "/adicionarRelatorio")
     public ResponseEntity<ByteArrayResource> adicionarArquivo(@Valid @RequestBody MultipartFile relatorio){
         return alunoService.adicionarRelatorio(relatorio);
     }
+    
 }

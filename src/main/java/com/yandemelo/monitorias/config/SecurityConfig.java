@@ -45,9 +45,13 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET, "/professor/monitoria/avaliar/{idMonitoria}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/professor/historico/{idArquivo}").hasRole("PROFESSOR")
         .requestMatchers(HttpMethod.GET, "/professor/alterarRelatorio/{idAluno}/{idArquivo}/{idMonitoria}").hasRole("PROFESSOR")
+        .requestMatchers(HttpMethod.GET, "/aluno/user").hasRole("ALUNO")
         .requestMatchers(HttpMethod.GET, "/aluno/inscricao").hasRole("ALUNO")
         .requestMatchers(HttpMethod.GET, "/aluno/monitoria").hasRole("ALUNO")
         .requestMatchers(HttpMethod.POST, "/aluno/adicionarRelatorio").hasRole("ALUNO")
+        .requestMatchers(HttpMethod.POST, "/api/arquivos/inserir").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/arquivos/buscar/{fileName}").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/files/download/{fileName}").permitAll()
         .anyRequest().authenticated())
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
