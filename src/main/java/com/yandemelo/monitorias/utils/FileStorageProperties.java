@@ -1,4 +1,4 @@
-package com.yandemelo.monitorias.config.file;
+package com.yandemelo.monitorias.utils;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

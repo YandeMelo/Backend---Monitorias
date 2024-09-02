@@ -52,6 +52,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.POST, "/api/arquivos/inserir").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/arquivos/buscar/{fileName}").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/files/download/{fileName}").permitAll()
+        .requestMatchers(HttpMethod.POST, "/email").permitAll()
         .anyRequest().authenticated())
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         .build();

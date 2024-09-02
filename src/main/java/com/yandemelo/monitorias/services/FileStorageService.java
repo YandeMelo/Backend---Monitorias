@@ -15,11 +15,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.yandemelo.monitorias.config.file.FileStorageProperties;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.exceptions.BadRequestException;
 import com.yandemelo.monitorias.repositories.authRepositories.UserRepository;
 import com.yandemelo.monitorias.services.authServices.AuthorizationService;
+import com.yandemelo.monitorias.utils.FileStorageProperties;
 
 @Service
 public class FileStorageService {
