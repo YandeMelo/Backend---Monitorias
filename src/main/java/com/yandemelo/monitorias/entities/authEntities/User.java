@@ -3,6 +3,7 @@ package com.yandemelo.monitorias.entities.authEntities;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +23,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -58,6 +61,11 @@ public class User implements UserDetails{
     @Column(unique = true)
     @Email
     private String email;
+
+    private String codigoRecuperacaoSenha;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dataEnvioCodigo;
 
     @NotBlank
     private String password;

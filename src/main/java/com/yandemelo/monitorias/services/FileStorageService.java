@@ -40,7 +40,7 @@ public class FileStorageService {
     public String inserirArquivo(MultipartFile file) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
-        if (!(file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png") || file.getContentType().equals("image/gif"))){
+        if (!(file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png") || file.getContentType().equals("image/gif") || file.getContentType().equals("image/webp"))){
             throw new BadRequestException("Formato de arquivo inválido!");
         }
 

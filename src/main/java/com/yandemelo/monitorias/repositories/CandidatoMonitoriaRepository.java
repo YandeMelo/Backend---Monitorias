@@ -19,30 +19,38 @@ public interface CandidatoMonitoriaRepository extends JpaRepository<CandidatoMon
     @Query("SELECT c FROM CandidatoMonitoria c WHERE c.alunoId = :candidato AND c.monitoriaId = :monitoria " )
     CandidatoMonitoria verInscricaoMonitoria(User candidato, Monitoria monitoria);
     
-    @Query("SELECT cm " +
-        "FROM CandidatoMonitoria cm " +
-        "INNER JOIN cm.alunoId u " +
-        "INNER JOIN cm.monitoriaId m " +
-        "WHERE m.id = :idMonitoria")
+    @Query("""
+        SELECT cm \
+        FROM CandidatoMonitoria cm \
+        INNER JOIN cm.alunoId u \
+        INNER JOIN cm.monitoriaId m \
+        WHERE m.id = :idMonitoria\
+        """)
     CandidatoMonitoria consultarAlunoEMonitoria(Long idMonitoria);
 
-    @Query("SELECT cm " +
-        "FROM CandidatoMonitoria cm " +
-        "INNER JOIN cm.alunoId u " +
-        "INNER JOIN cm.monitoriaId m " +
-        "WHERE m.monitorId.id = :idMonitor")
+    @Query("""
+        SELECT cm \
+        FROM CandidatoMonitoria cm \
+        INNER JOIN cm.alunoId u \
+        INNER JOIN cm.monitoriaId m \
+        WHERE m.monitorId.id = :idMonitor\
+        """)
     CandidatoMonitoria consultarAlunoCandidatado(Long idMonitor);
 
-    @Query("SELECT cm " +
-        "FROM CandidatoMonitoria cm " +
-        "INNER JOIN cm.alunoId u " +
-        "INNER JOIN cm.monitoriaId m " +
-        "INNER JOIN cm.pdfHistoricoEscolar a " +
-        "WHERE m.id = :idMonitoria")
+    @Query("""
+        SELECT cm \
+        FROM CandidatoMonitoria cm \
+        INNER JOIN cm.alunoId u \
+        INNER JOIN cm.monitoriaId m \
+        INNER JOIN cm.pdfHistoricoEscolar a \
+        WHERE m.id = :idMonitoria\
+        """)
     Page<CandidatoMonitoria> consultarCandidatos(Long idMonitoria, Pageable pageable);
 
-    @Query("SELECT cm FROM CandidatoMonitoria cm " +
-            "INNER JOIN cm.monitoriaId m " + 
-            "WHERE m.id = :idMonitoria ")
+    @Query("""
+            SELECT cm FROM CandidatoMonitoria cm \
+            INNER JOIN cm.monitoriaId m \
+            WHERE m.id = :idMonitoria \
+            """)
     List<CandidatoMonitoria> consultarCandidaturas(Long idMonitoria);
 }
