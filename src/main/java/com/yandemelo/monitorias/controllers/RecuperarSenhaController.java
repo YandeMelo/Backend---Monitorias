@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yandemelo.monitorias.dto.codigoVerificacao.AlterarSenhaDTO;
+import com.yandemelo.monitorias.dto.codigoVerificacao.RedefinirSenhaDTO;
 import com.yandemelo.monitorias.dto.codigoVerificacao.VerificarCodigoDTO;
 import com.yandemelo.monitorias.services.RecuperarSenhaService;
 
@@ -32,6 +33,11 @@ public class RecuperarSenhaController {
     @PostMapping("/alterarSenha")
     public ResponseEntity<String> alterarSenha(@RequestBody AlterarSenhaDTO user){
         return recuperarSenhaService.alterarSenha(user);
+    }
+
+    @PostMapping("/redefinirSenha")
+    public ResponseEntity<String> redefinirSenha(@RequestBody RedefinirSenhaDTO dto){
+        return recuperarSenhaService.redefinirSenha(dto);
     }
 
 }

@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.yandemelo.monitorias.dto.codigoVerificacao.AlterarSenhaDTO;
+import com.yandemelo.monitorias.dto.codigoVerificacao.RedefinirSenhaDTO;
 import com.yandemelo.monitorias.dto.codigoVerificacao.VerificarCodigoDTO;
 import com.yandemelo.monitorias.entities.authEntities.User;
 import com.yandemelo.monitorias.repositories.authRepositories.UserRepository;
+import com.yandemelo.monitorias.services.authServices.AuthorizationService;
 import com.yandemelo.monitorias.utils.Email;
 import com.yandemelo.monitorias.exceptions.BadRequestException;
 
@@ -25,6 +27,12 @@ public class RecuperarSenhaService {
 
     @Autowired
     public EmailService emailService;
+    
+    @Autowired
+    public AuthorizationService userService;
+    
+    @Autowired
+    public BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
     public ResponseEntity<String> solicitarCodigo(String email) {
@@ -75,4 +83,15 @@ public class RecuperarSenhaService {
         return format.format(new Date()) + id;
     }
 
+    @Transactional
+    public ResponseEntity<String> redefinirSenha(RedefinirSenhaDTO dto){
+        User user = userService.authenticated();
+        if (!(passwordEncoder.matches(dto.getSenhaAtual(), user.getPassword())) || (passwordEncoder.matches(dto.getNovaSenha(), user.getPassword()))) {
+            throw new BadRequestException("A senha atual incorreta ou nova senha igual a atual.");
+        }
+        
+        user.setPassword(passwordEncoder.encode(dto.getNovaSenha()));
+        userRepository.saveAndFlush(user);
+        return ResponseEntity.ok().body("Senha alterada com sucesso!");
+    }
 }

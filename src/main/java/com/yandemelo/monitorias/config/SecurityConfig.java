@@ -53,7 +53,10 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET, "/api/arquivos/buscar/{fileName}").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/files/download/{fileName}").permitAll()
         .requestMatchers(HttpMethod.POST, "/email").permitAll()
-        .requestMatchers(HttpMethod.POST, "/recuperar/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/recuperar/codigo").permitAll()
+        .requestMatchers(HttpMethod.POST, "/recuperar/verificar").permitAll()
+        .requestMatchers(HttpMethod.POST, "/recuperar/alterarSenha").permitAll()
+        .requestMatchers(HttpMethod.POST, "/recuperar/redefinirSenha").hasAnyRole("PROFESSOR", "ALUNO")
         .anyRequest().authenticated())
         .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
         .build();

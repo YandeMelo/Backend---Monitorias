@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.yandemelo.monitorias.config.TokenService;
 import com.yandemelo.monitorias.dto.authDTO.AuthenticationDTO;
@@ -62,8 +63,13 @@ public class AuthenticationController {
         if (this.repository.findByEmail(data.email()) != null) {
             return ResponseEntity.badRequest().build();
         }
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("api/arquivos/buscar/")
+                    .path("perfilPadrao.webp")
+                    .toUriString();
+
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        User newUser = new User(data.nome(), data.cpf(), data.curso(), data.email(), data.fotoPerfil(), data.ativo(), data.dataDesativacao(), data.tipoUsuario(), LocalDate.now(), LocalDate.now(), encryptedPassword);
+        User newUser = new User(data.nome(), data.cpf(), data.curso(), data.email(), fileDownloadUri, data.ativo(), data.dataDesativacao(), data.tipoUsuario(), LocalDate.now(), LocalDate.now(), encryptedPassword);
 
         this.repository.save(newUser);
         return ResponseEntity.ok().build();
